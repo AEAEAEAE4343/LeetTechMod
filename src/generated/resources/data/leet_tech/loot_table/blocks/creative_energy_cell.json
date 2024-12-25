@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "leet_tech:creative_energy_cell"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "leet_tech:blocks/creative_energy_cell"
+}

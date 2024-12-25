@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "leet_tech:block/budding_aesthetic"
+  }
+}

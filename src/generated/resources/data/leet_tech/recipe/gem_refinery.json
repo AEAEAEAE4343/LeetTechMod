@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "leet_tech:aesthetic_dust",
+    "D": "minecraft:diamond",
+    "F": "minecraft:furnace"
+  },
+  "pattern": [
+    "DAD",
+    "AFA",
+    "DAD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "leet_tech:gem_refinery"
+  }
+}

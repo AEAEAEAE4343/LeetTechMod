@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "leet_tech:block/crystal_injector_front",
+    "side": "leet_tech:block/crystal_injector_side",
+    "top": "leet_tech:block/crystal_injector_side"
+  }
+}

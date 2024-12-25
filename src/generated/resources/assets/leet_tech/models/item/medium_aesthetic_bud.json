@@ -1,0 +1,6 @@
+{
+  "parent": "leet_tech:item/aesthetic_bud",
+  "textures": {
+    "layer0": "leet_tech:block/medium_aesthetic_bud"
+  }
+}

@@ -1,0 +1,12 @@
+// 1.21.4	2024-12-23T18:57:35.861123	Loot Tables
+6a4fba8d3039fbb7418605bd8294b5c55a48a8be data/leet_tech/loot_table/blocks/aesthetic_block.json
+85540a01020358e349a33e1efee7cd8647a09042 data/leet_tech/loot_table/blocks/aesthetic_cluster.json
+636f2b646b0b5c9e4d8789ca1b380e6a259ad5c5 data/leet_tech/loot_table/blocks/budding_aesthetic.json
+19ec6b39bbaee9b22d2c0a1f1a66345dac83ce39 data/leet_tech/loot_table/blocks/creative_energy_cell.json
+e9ff9c604cc9964c6c05d7190d077c10aa82e540 data/leet_tech/loot_table/blocks/crystal_injector.json
+c0439ab03d7c4520b181dd62b8d666f7e2a9441b data/leet_tech/loot_table/blocks/crystallizer.json
+e88074c122731158d293b3bc48c49ecc974ace52 data/leet_tech/loot_table/blocks/energy_cell.json
+e38c310ccf30511d7eb1dfb09cb5399d0efdf07b data/leet_tech/loot_table/blocks/gem_refinery.json
+c90331cce3642a083af8462e8841b511ddcdb278 data/leet_tech/loot_table/blocks/large_aesthetic_bud.json
+bc14c0ec4402362119e346a932eaf92038d1b064 data/leet_tech/loot_table/blocks/medium_aesthetic_bud.json
+619edd9f1e6d0d8d11d62ab26b980a6e688566d1 data/leet_tech/loot_table/blocks/small_aesthetic_bud.json

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "leet_tech:block/crystal_injector",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "leet_tech:block/crystal_injector"
+    },
+    "facing=south": {
+      "model": "leet_tech:block/crystal_injector",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "leet_tech:block/crystal_injector",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "leet_tech:aesthetic_crystal",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "III",
+    "ISI",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "leet_tech:aesthetic_hammer"
+  }
+}
