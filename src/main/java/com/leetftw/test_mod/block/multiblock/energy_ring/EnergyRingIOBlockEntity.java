@@ -8,6 +8,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.MultifaceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -90,20 +91,21 @@ public class EnergyRingIOBlockEntity extends BlockEntity
 
         this.controller = controller;
         invalidateCapabilities();
+        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
         setChanged();
     }
 
     public IEnergyStorage getEnergyStorage()
     {
         if (!getBlockState().getValue(StaticMultiBlockPart.FORMED)) return null;
-        if (level == null) return null;
+        //if (level == null) return null;
         if (controller == null) return null;
         if (controller.equals(BlockPos.ZERO)) return null;
 
         BlockEntity entity = level.getBlockEntity(controller);
         if (entity instanceof EnergyRingControllerBlockEntity controllerBE)
         {
-            return controllerBE.getEnergyStorage(input, !input);
+             return controllerBE.getEnergyStorage(input, !input);
         }
         return null;
     }
