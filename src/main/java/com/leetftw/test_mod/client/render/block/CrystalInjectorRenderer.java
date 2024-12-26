@@ -98,7 +98,6 @@ public class CrystalInjectorRenderer implements BlockEntityRenderer<CrystalInjec
         poseStack.translate(-0.5, -0.5, -0.5);
 
         // Get liquid aesthetic texture sprite
-        // TODO: this should only be ran once!
         int tintColor = fluidAttributes.getTintColor(fluidDefaultState, crystalInjectorBlockEntity.getLevel(), crystalInjectorBlockEntity.getBlockPos());
 
         // TODO: fix brightness
@@ -150,14 +149,5 @@ public class CrystalInjectorRenderer implements BlockEntityRenderer<CrystalInjec
                             VertexConsumer builder, PoseStack poseStack, int packedLight, int packedOverlay, int tintColor)
     {
         builder.addVertex(poseStack.last().pose(), x0, y0, z0).setLight(packedLight).setOverlay(packedOverlay).setColor(tintColor).setUv(u, v).setNormal(xn, yn, zn);
-    }
-
-    private void drawQuad(float x0, float y0, float z0, float x1, float y1, float z1,
-                          float xn, float yn, float zn, VertexConsumer builder, PoseStack poseStack, int packedLight, int packedOverlay, int tintColor, TextureAtlasSprite sprite)
-    {
-        builder.addVertex(poseStack.last().pose(), x0, y0, z0).setLight(packedLight).setOverlay(packedOverlay).setColor(tintColor).setUv(sprite.getU0(), sprite.getV0()).setNormal(xn, yn, zn);
-        builder.addVertex(poseStack.last().pose(), x0, y1, z1).setLight(packedLight).setOverlay(packedOverlay).setColor(tintColor).setUv(sprite.getU0(), sprite.getV1()).setNormal(xn, yn, zn);
-        builder.addVertex(poseStack.last().pose(), x1, y1, z1).setLight(packedLight).setOverlay(packedOverlay).setColor(tintColor).setUv(sprite.getU1(), sprite.getV1()).setNormal(xn, yn, zn);
-        builder.addVertex(poseStack.last().pose(), x1, y0, z0).setLight(packedLight).setOverlay(packedOverlay).setColor(tintColor).setUv(sprite.getU1(), sprite.getV0()).setNormal(xn, yn, zn);
     }
 }

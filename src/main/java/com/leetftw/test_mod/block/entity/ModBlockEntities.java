@@ -6,6 +6,7 @@ import com.leetftw.test_mod.block.ModBlocks;
 import com.leetftw.test_mod.block.multiblock.energy_ring.EnergyRingControllerBlockEntity;
 import com.leetftw.test_mod.block.multiblock.energy_ring.EnergyRingIOBlockEntity;
 import com.leetftw.test_mod.client.render.block.CrystalInjectorRenderer;
+import com.leetftw.test_mod.client.render.block.EnergyRingRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -143,6 +144,7 @@ public class ModBlockEntities
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerBlockEntityRenderer(CRYSTAL_INJECTOR_BE.get(), CrystalInjectorRenderer::new);
+        event.registerBlockEntityRenderer(ENERGY_RING_CONTROLLER_BE.get(), EnergyRingRenderer::new);
     }
 
     @SubscribeEvent
