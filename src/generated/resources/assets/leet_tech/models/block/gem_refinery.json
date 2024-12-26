@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "leet_tech:block/gem_refinery_front",
-    "side": "leet_tech:block/gem_refinery_side",
-    "top": "leet_tech:block/gem_refinery_side"
-  }
-}

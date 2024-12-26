@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "leet_tech:block/aesthetic_block"
-  }
-}

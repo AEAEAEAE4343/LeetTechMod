@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "leet_tech:block/energy_cell_front_7",
-    "side": "leet_tech:block/energy_cell_side",
-    "top": "leet_tech:block/energy_cell_side"
-  }
-}

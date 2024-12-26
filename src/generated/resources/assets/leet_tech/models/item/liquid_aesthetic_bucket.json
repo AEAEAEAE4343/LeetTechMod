@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "leet_tech:item/liquid_aesthetic_bucket"
-  }
-}
