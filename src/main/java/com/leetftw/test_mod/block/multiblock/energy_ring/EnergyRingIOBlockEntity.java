@@ -1,16 +1,15 @@
 package com.leetftw.test_mod.block.multiblock.energy_ring;
 
 import com.leetftw.test_mod.block.multiblock.StaticMultiBlockPart;
+import com.leetftw.test_mod.util.ForgeEnergyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.MultifaceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,7 +17,6 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Objects;
 
 public class EnergyRingIOBlockEntity extends BlockEntity
 {
@@ -108,5 +106,13 @@ public class EnergyRingIOBlockEntity extends BlockEntity
              return controllerBE.getEnergyStorage(input, !input);
         }
         return null;
+    }
+
+    public void tick(Level pLevel, BlockPos pPos, BlockState state)
+    {
+        if (level.isClientSide) return;
+        if (input) return;
+
+        ForgeEnergyHelper.pushPower(this);
     }
 }

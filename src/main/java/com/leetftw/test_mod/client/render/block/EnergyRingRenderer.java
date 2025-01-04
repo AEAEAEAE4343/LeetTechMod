@@ -3,7 +3,7 @@ package com.leetftw.test_mod.client.render.block;
 import com.leetftw.test_mod.block.multiblock.energy_ring.EnergyRingControllerBlockEntity;
 import com.leetftw.test_mod.client.render.block.model.EnergyRingUnbakedModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -29,7 +29,7 @@ public class EnergyRingRenderer implements BlockEntityRenderer<EnergyRingControl
 
         float d = 2f;
         float d_prime = 0.25f;
-        model = new EnergyRingUnbakedModel(fluidSprite, d, d_prime, 10, 90);
+        model = new EnergyRingUnbakedModel(fluidSprite, d, d_prime, 10, 45);
         model.bake();
     }
 
@@ -60,7 +60,7 @@ public class EnergyRingRenderer implements BlockEntityRenderer<EnergyRingControl
 
         long gameTime = energyRingControllerBlockEntity.getLevel().getGameTime();
         float angle = (gameTime + partialTick) * 7.5f;
-        //poseStack.mulPose(Axis.YP.rotationDegrees(angle));
+        poseStack.mulPose(Axis.YP.rotationDegrees(angle));
 
         // Rendering
         model.render(poseStack, multiBufferSource, LightTexture.pack(15, 15), packedOverlay);

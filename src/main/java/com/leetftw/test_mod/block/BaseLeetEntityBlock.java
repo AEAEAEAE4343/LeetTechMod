@@ -13,10 +13,12 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,5 +78,19 @@ public abstract class BaseLeetEntityBlock extends BaseEntityBlock
             tooltipComponents.add(Component.literal(
                     Component.translatable("tooltip." + LeetTechMod.MOD_ID + ".block_entity_energy_tooltip").getString()
                             + energyToString(energyStored) + " / " + energyToString(energyCapacity)));
+    }
+
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType)
+    {
+        if (level.isClientSide)
+            return null;
+
+        return createTickerHelper(blockEntityType, blockEntityType,
+                (pLevel, pPos, pState, pBlockEntity) ->
+                {
+                    if (pBlockEntity instanceof BaseLeetBlockEntity baseLeetBlockEntity)
+                        baseLeetBlockEntity.tick(pLevel, pPos, pState);
+                });
     }
 }

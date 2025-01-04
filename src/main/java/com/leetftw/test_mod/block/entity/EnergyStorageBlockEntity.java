@@ -2,17 +2,13 @@ package com.leetftw.test_mod.block.entity;
 
 import com.leetftw.test_mod.block.EnergyStorageBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,20 +17,6 @@ public class EnergyStorageBlockEntity extends BaseLeetBlockEntity
     private int capacity;
     private int transfer;
     private boolean creative;
-
-    public void pushPower(IEnergyStorage storage)
-    {
-        int insertedStorage = storage.receiveEnergy(energyGetStored(), false);
-        if (!creative) energySetStored(energyGetStored() - insertedStorage);
-    }
-
-    public void tick(Level pLevel, BlockPos pPos, BlockState pState)
-    {
-        if (!pLevel.isClientSide() && level.getCapability(Capabilities.EnergyStorage.BLOCK, pPos.relative(Direction.EAST), Direction.WEST) instanceof IEnergyStorage storage) pushPower(storage);
-        if (!pLevel.isClientSide() && level.getCapability(Capabilities.EnergyStorage.BLOCK, pPos.relative(Direction.WEST), Direction.EAST) instanceof IEnergyStorage storage) pushPower(storage);
-        if (!pLevel.isClientSide() && level.getCapability(Capabilities.EnergyStorage.BLOCK, pPos.relative(Direction.NORTH), Direction.SOUTH) instanceof IEnergyStorage storage) pushPower(storage);
-        if (!pLevel.isClientSide() && level.getCapability(Capabilities.EnergyStorage.BLOCK, pPos.relative(Direction.SOUTH), Direction.NORTH) instanceof IEnergyStorage storage) pushPower(storage);
-    }
 
     public EnergyStorageBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState, int capacity, int transfer)
     {

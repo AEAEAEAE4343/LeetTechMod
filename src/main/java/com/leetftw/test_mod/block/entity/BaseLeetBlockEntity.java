@@ -1,6 +1,7 @@
 package com.leetftw.test_mod.block.entity;
 
 import com.leetftw.test_mod.LeetTechMod;
+import com.leetftw.test_mod.util.ForgeEnergyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
@@ -20,6 +21,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -56,6 +58,16 @@ public abstract class BaseLeetBlockEntity extends BlockEntity implements MenuPro
     private int energyInventory = 0;
 
     private final ItemStackHandler ITEMS_NBT_HANDLER = new ItemStackHandler(itemsGetSlotCount());
+
+    //region TICKER
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState)
+    {
+        if (!pLevel.isClientSide() && energyAllowExtract())
+        {
+            ForgeEnergyHelper.pushPower(this);
+        }
+    }
+    //endregion
 
     //region INTERFACE IMPLEMENTATION
     private final Container container = new Container()
