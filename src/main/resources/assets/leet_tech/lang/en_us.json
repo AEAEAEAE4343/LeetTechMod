@@ -5,16 +5,24 @@
   "item.leet_tech.liquid_aesthetic_bucket": "Bucket of Liquid Aesthetic",
 
   "block.leet_tech.aesthetic_block": "Aesthetic Block",
+
   "block.leet_tech.budding_aesthetic": "Budding Aesthetic",
   "block.leet_tech.small_aesthetic_bud": "Small Aesthetic Bud",
   "block.leet_tech.medium_aesthetic_bud": "Medium Aesthetic Bud",
   "block.leet_tech.large_aesthetic_bud": "Large Aesthetic Bud",
   "block.leet_tech.aesthetic_cluster": "Aesthetic Cluster",
+
   "block.leet_tech.gem_refinery": "Gem Refinery",
   "block.leet_tech.crystallizer": "Crystallizer",
   "block.leet_tech.crystal_injector": "Crystal Injector",
+
   "block.leet_tech.energy_cell": "Energy Cell",
   "block.leet_tech.creative_energy_cell": "Creative Energy Cell",
+
+  "block.leet_tech.energy_ring_controller": "Energy Ring Controller",
+  "block.leet_tech.energy_ring_casing": "Energy Ring Casing",
+  "block.leet_tech.energy_ring_input_port": "Energy Ring Input Port",
+  "block.leet_tech.energy_ring_output_port": "Energy Ring Output Port",
 
   "tooltip.leet_tech.block_entity_energy_tooltip": "Energy: ",
 
