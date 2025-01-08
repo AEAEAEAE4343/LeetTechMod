@@ -5,6 +5,8 @@ import com.leetftw.tech_mod.block.entity.codec.BaseLeetBlockEntityCodecs;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingControllerBlock;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingIOBlock;
+import com.leetftw.tech_mod.block.multiblock.quarry.QuarryControllerBlock;
+import com.leetftw.tech_mod.block.multiblock.quarry.QuarryFrameBlock;
 import com.leetftw.tech_mod.fluid.ModFluids;
 import com.leetftw.tech_mod.item.ModItems;
 import net.minecraft.core.registries.Registries;
@@ -141,6 +143,16 @@ public class ModBlocks
     public static final DeferredBlock<EnergyRingIOBlock> ENERGY_RING_OUTPUT_PORT = BLOCKS.registerBlock("energy_ring_output_port",
             properties -> new EnergyRingIOBlock(properties.noOcclusion(), false));
     public static final DeferredItem<BlockItem> ENERGY_RING_OUTPUT_PORT_ITEM = ModItems.ITEMS.registerSimpleBlockItem(ENERGY_RING_OUTPUT_PORT);
+
+    public static final DeferredBlock<QuarryControllerBlock> QUARRY_CONTROLLER = BLOCKS.registerBlock("quarry_controller",
+            QuarryControllerBlock::new);
+    public static final DeferredItem<BlockItem> QUARRY_CONTROLLER_ITEM = ModItems.ITEMS.register("quarry_controller",
+            registryName -> new BlockItem(QUARRY_CONTROLLER.get(),
+                    createBEProperties(100_000).setId(ResourceKey.create(Registries.ITEM, registryName))));
+
+    public static final DeferredBlock<QuarryFrameBlock> QUARRY_FRAME = BLOCKS.registerBlock("quarry_frame",
+            properties -> new QuarryFrameBlock(properties.noOcclusion().dynamicShape()));
+    public static final DeferredItem<BlockItem> QUARRY_FRAME_ITEM = ModItems.ITEMS.registerSimpleBlockItem(QUARRY_FRAME);
 
     public static void register(IEventBus event)
     {

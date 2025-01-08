@@ -3,15 +3,14 @@ package com.leetftw.tech_mod.datagen;
 import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.EnergyStorageBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
+import com.leetftw.tech_mod.block.multiblock.quarry.QuarryFrameBlock;
+import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.VariantBlockStateBuilder;
+import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
@@ -82,6 +81,48 @@ public class ModBlockStateProvider extends BlockStateProvider
                         ).build());
         itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_CONTROLLER.get());
 
+        ResourceLocation quarryFrameBase = modLoc("block/quarry_frame_base");
+        ResourceLocation quarryFrameExtension = modLoc("block/quarry_frame_extension");
+        MultiPartBlockStateBuilder multipartBuilder = this.getMultipartBuilder(ModBlocks.QUARRY_FRAME.get());
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameBase))
+                .addModel()
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension))
+                .addModel()
+                .condition(QuarryFrameBlock.NORTH_CON, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension))
+                .rotationY(90)
+                .addModel()
+                .condition(QuarryFrameBlock.EAST_CON, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension))
+                .rotationY(180)
+                .addModel()
+                .condition(QuarryFrameBlock.SOUTH_CON, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension))
+                .rotationY(-90)
+                .addModel()
+                .condition(QuarryFrameBlock.WEST_CON, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension))
+                .rotationX(-90)
+                .addModel()
+                .condition(QuarryFrameBlock.UP_CON, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension))
+                .rotationX(90)
+                .addModel()
+                .condition(QuarryFrameBlock.DOWN_CON, true)
+                .end();
 
         ResourceLocation itemGenerated = ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated");
         itemModels().withExistingParent("aesthetic_bud", itemGenerated)

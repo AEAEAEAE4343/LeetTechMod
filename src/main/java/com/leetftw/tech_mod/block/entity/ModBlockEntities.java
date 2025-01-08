@@ -5,6 +5,7 @@ import com.leetftw.tech_mod.block.EnergyStorageBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingControllerBlockEntity;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingIOBlockEntity;
+import com.leetftw.tech_mod.block.multiblock.quarry.QuarryControllerBlockEntity;
 import com.leetftw.tech_mod.client.render.block.CrystalInjectorRenderer;
 import com.leetftw.tech_mod.client.render.block.EnergyRingRenderer;
 import net.minecraft.core.BlockPos;
@@ -135,6 +136,23 @@ public class ModBlockEntities
                     ModBlocks.ENERGY_RING_OUTPUT_PORT.get()
             ));
 
+    public static final Supplier<BlockEntityType<QuarryControllerBlockEntity>> QUARRY_CONTROLLER_BE = BLOCK_ENTITY_TYPES.register(
+            "quarry_controller_be",
+            // The block entity type.
+            () -> new BlockEntityType<>(
+                    // The supplier to use for constructing the block entity instances.
+                    new BlockEntityType.BlockEntitySupplier<>() {
+                        @Override
+                        @ParametersAreNonnullByDefault
+                        public @NotNull QuarryControllerBlockEntity create(BlockPos blockPos, BlockState blockState) {
+                            return new QuarryControllerBlockEntity(QUARRY_CONTROLLER_BE.get(), blockPos, blockState);
+                        }
+                    },
+                    // A vararg of blocks that can have this block entity.
+                    // This assumes the existence of the referenced blocks as DeferredBlock<Block>s.
+                    ModBlocks.QUARRY_CONTROLLER.get()
+            ));
+
     public static void register(IEventBus bus)
     {
         BLOCK_ENTITY_TYPES.register(bus);
@@ -202,6 +220,18 @@ public class ModBlockEntities
                 Capabilities.EnergyStorage.BLOCK,
                 ModBlockEntities.ENERGY_RING_IO_PORT_BE.get(),
                 EnergyRingIOBlockEntity::getEnergyStorage
+        );
+
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                ModBlockEntities.QUARRY_CONTROLLER_BE.get(),
+                (blockEntity, side) -> blockEntity.getEnergyStorage()
+        );
+
+        event.registerBlockEntity(
+                Capabilities.FluidHandler.BLOCK,
+                ModBlockEntities.QUARRY_CONTROLLER_BE.get(),
+                (blockEntity, side) -> blockEntity.getFluidHandler()
         );
     }
 }
