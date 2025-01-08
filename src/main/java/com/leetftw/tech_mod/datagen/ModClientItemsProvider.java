@@ -101,6 +101,11 @@ public class ModClientItemsProvider extends JsonCodecProvider<ClientItem>
         addSimpleBlockItem(ModBlocks.CRYSTALLIZER_ITEM);
         addSimpleBlockItem(ModBlocks.CRYSTAL_INJECTOR_ITEM);
 
+        addSimpleBlockItem(ModBlocks.ENERGY_RING_CONTROLLER_ITEM);
+        addSimpleBlockItem(ModBlocks.ENERGY_RING_INPUT_PORT_ITEM);
+        addSimpleBlockItem(ModBlocks.ENERGY_RING_OUTPUT_PORT_ITEM);
+        addSimpleBlockItem(ModBlocks.ENERGY_RING_CASING_ITEM);
+
         unconditional(ModBlocks.ENERGY_CELL_ITEM.getId(), ClientItem.fromResourceLocation(ModBlocks.ENERGY_CELL_ITEM.getId().withSuffix("_front_0"), "block"));
         unconditional(ModBlocks.CREATIVE_ENERGY_CELL_ITEM.getId(), ClientItem.fromResourceLocation(ModBlocks.CREATIVE_ENERGY_CELL_ITEM.getId().withSuffix("_front_12"), "block"));
     }

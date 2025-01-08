@@ -69,8 +69,21 @@ public class ModBlockStateProvider extends BlockStateProvider
         horizontalBlock(ModBlocks.ENERGY_RING_OUTPUT_PORT.get(), energy_ring_casing, energy_ring_output_port_front, energy_ring_casing);
         itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_OUTPUT_PORT.get());
 
-        ResourceLocation itemGenerated = ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated");
+        VariantBlockStateBuilder variantBuilder = this.getVariantBuilder(ModBlocks.ENERGY_RING_CONTROLLER.get());
+        variantBuilder.forAllStates(state ->
+                ConfiguredModel.builder().modelFile(models().cube("block/energy_ring_controller",
+                                        modLoc("block/energy_ring_controller_bottom"),
+                                        modLoc("block/energy_ring_controller_bottom"),
+                                        modLoc("block/energy_ring_controller_side"),
+                                        modLoc("block/energy_ring_controller_side"),
+                                        modLoc("block/energy_ring_controller_side"),
+                                        modLoc("block/energy_ring_controller_side"))
+                                .texture("particle", "#north")
+                        ).build());
+        itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_CONTROLLER.get());
 
+
+        ResourceLocation itemGenerated = ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated");
         itemModels().withExistingParent("aesthetic_bud", itemGenerated)
                 .transforms()
                 .transform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)

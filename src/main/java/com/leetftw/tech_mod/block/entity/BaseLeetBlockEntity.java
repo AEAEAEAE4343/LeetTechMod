@@ -1022,7 +1022,7 @@ public abstract class BaseLeetBlockEntity extends BlockEntity implements MenuPro
     @Override
     public @NotNull Component getDisplayName()
     {
-        return Component.translatable("block." + LeetTechMod.MOD_ID +"." + getBlockState().getBlock().getName());
+        return getBlockState().getBlock().getName();
     }
 
     @Override
