@@ -3,6 +3,7 @@ package com.leetftw.tech_mod.datagen;
 import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.EnergyStorageBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
+import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.block.multiblock.quarry.QuarryFrameBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
@@ -71,15 +72,20 @@ public class ModBlockStateProvider extends BlockStateProvider
         VariantBlockStateBuilder variantBuilder = this.getVariantBuilder(ModBlocks.ENERGY_RING_CONTROLLER.get());
         variantBuilder.forAllStates(state ->
                 ConfiguredModel.builder().modelFile(models().cube("block/energy_ring_controller",
-                                        modLoc("block/energy_ring_controller_bottom"),
-                                        modLoc("block/energy_ring_controller_bottom"),
+                                        modLoc("block/energy_ring_casing"),
+                                        modLoc("block/energy_ring_casing"),
                                         modLoc("block/energy_ring_controller_side"),
                                         modLoc("block/energy_ring_controller_side"),
                                         modLoc("block/energy_ring_controller_side"),
                                         modLoc("block/energy_ring_controller_side"))
-                                .texture("particle", "#north")
+                                .texture("particle", modLoc("block/energy_ring_casing"))
                         ).build());
         itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_CONTROLLER.get());
+
+        ResourceLocation quarry_controller_front = modLoc("block/quarry_controller_front");
+        ResourceLocation quarry_controller_side = modLoc("block/quarry_controller_side");
+        horizontalBlock(ModBlocks.QUARRY_CONTROLLER.get(), quarry_controller_side, quarry_controller_front, quarry_controller_side);
+        itemModels().simpleBlockItem(ModBlocks.QUARRY_CONTROLLER.get());
 
         ResourceLocation quarryFrameBase = modLoc("block/quarry_frame_base");
         ResourceLocation quarryFrameExtension = modLoc("block/quarry_frame_extension");
@@ -87,41 +93,97 @@ public class ModBlockStateProvider extends BlockStateProvider
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameBase))
                 .addModel()
+                .condition(StaticMultiBlockPart.FORMED, false)
                 .end();
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameExtension))
                 .addModel()
                 .condition(QuarryFrameBlock.NORTH_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, false)
                 .end();
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameExtension))
                 .rotationY(90)
                 .addModel()
                 .condition(QuarryFrameBlock.EAST_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, false)
                 .end();
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameExtension))
                 .rotationY(180)
                 .addModel()
                 .condition(QuarryFrameBlock.SOUTH_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, false)
                 .end();
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameExtension))
                 .rotationY(-90)
                 .addModel()
                 .condition(QuarryFrameBlock.WEST_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, false)
                 .end();
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameExtension))
                 .rotationX(-90)
                 .addModel()
                 .condition(QuarryFrameBlock.UP_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, false)
                 .end();
         multipartBuilder.part()
                 .modelFile(models().getExistingFile(quarryFrameExtension))
                 .rotationX(90)
                 .addModel()
                 .condition(QuarryFrameBlock.DOWN_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, false)
+                .end();
+
+        // TODO: REMOVE THIS
+        //       THIS ONLY EXISTS FOR DEBUGGING PURPOSES
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameBase.withSuffix("_formed")))
+                .addModel()
+                .condition(StaticMultiBlockPart.FORMED, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension.withSuffix("_formed")))
+                .addModel()
+                .condition(QuarryFrameBlock.NORTH_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension.withSuffix("_formed")))
+                .rotationY(90)
+                .addModel()
+                .condition(QuarryFrameBlock.EAST_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension.withSuffix("_formed")))
+                .rotationY(180)
+                .addModel()
+                .condition(QuarryFrameBlock.SOUTH_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension.withSuffix("_formed")))
+                .rotationY(-90)
+                .addModel()
+                .condition(QuarryFrameBlock.WEST_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension.withSuffix("_formed")))
+                .rotationX(-90)
+                .addModel()
+                .condition(QuarryFrameBlock.UP_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, true)
+                .end();
+        multipartBuilder.part()
+                .modelFile(models().getExistingFile(quarryFrameExtension.withSuffix("_formed")))
+                .rotationX(90)
+                .addModel()
+                .condition(QuarryFrameBlock.DOWN_CON, true)
+                .condition(StaticMultiBlockPart.FORMED, true)
                 .end();
 
         ResourceLocation itemGenerated = ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated");

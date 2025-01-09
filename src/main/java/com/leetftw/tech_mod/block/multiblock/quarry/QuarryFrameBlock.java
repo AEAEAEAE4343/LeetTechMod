@@ -17,6 +17,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public class QuarryFrameBlock extends StaticMultiBlockPart
 {
     public static final BooleanProperty NORTH_CON = BooleanProperty.create("north");
@@ -26,9 +28,18 @@ public class QuarryFrameBlock extends StaticMultiBlockPart
     public static final BooleanProperty UP_CON = BooleanProperty.create("up");
     public static final BooleanProperty DOWN_CON = BooleanProperty.create("down");
 
+    public static final Map<Direction, BooleanProperty> CONNECTION_MAP = Map.of(
+            Direction.NORTH, NORTH_CON,
+            Direction.EAST, EAST_CON,
+            Direction.SOUTH, SOUTH_CON,
+            Direction.WEST, WEST_CON,
+            Direction.UP, UP_CON,
+            Direction.DOWN, DOWN_CON
+    );
+
     public QuarryFrameBlock(Properties properties)
     {
-        super(properties);
+        super(properties, false);
 
         registerDefaultState(defaultBlockState()
                 .setValue(FORMED, false)
@@ -40,6 +51,8 @@ public class QuarryFrameBlock extends StaticMultiBlockPart
                 .setValue(DOWN_CON, false));
     }
 
+    // TODO: Maybe pre-generate these?
+    // Would add memory usage but increase performance
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
     {
@@ -80,18 +93,30 @@ public class QuarryFrameBlock extends StaticMultiBlockPart
 
     private BlockState getStateForPos(BlockState state, Level level, BlockPos pos)
     {
-        if (level.getBlockState(pos.relative(Direction.NORTH)).getBlock() instanceof QuarryFrameBlock)
-            state = state.setValue(NORTH_CON, true);
-        if (level.getBlockState(pos.relative(Direction.EAST)).getBlock() instanceof QuarryFrameBlock)
-            state = state.setValue(EAST_CON, true);
-        if (level.getBlockState(pos.relative(Direction.SOUTH)).getBlock() instanceof QuarryFrameBlock)
-            state = state.setValue(SOUTH_CON, true);
-        if (level.getBlockState(pos.relative(Direction.WEST)).getBlock() instanceof QuarryFrameBlock)
-            state = state.setValue(WEST_CON, true);
-        if (level.getBlockState(pos.relative(Direction.UP)).getBlock() instanceof QuarryFrameBlock)
-            state = state.setValue(UP_CON, true);
-        if (level.getBlockState(pos.relative(Direction.DOWN)).getBlock() instanceof QuarryFrameBlock)
-            state = state.setValue(DOWN_CON, true);
+        BlockState initialState = state;
+
+        boolean hasUnformedNeighbours = false;
+        for (Direction direction : Direction.values())
+        {
+            // Get the neighbour block
+            BlockState neighbor = level.getBlockState(pos.relative(direction));
+            boolean isNeighbour = neighbor.getBlock() instanceof QuarryFrameBlock;
+
+            // Update the blockstate of this block
+            state = state.setValue(CONNECTION_MAP.get(direction), isNeighbour);
+
+            // Determine whether the formation is broken
+            if (isNeighbour && !neighbor.getValue(FORMED)) {
+                hasUnformedNeighbours = true;
+            }
+        }
+
+        // If anything changes, we break formation
+        if (hasUnformedNeighbours || !state.equals(initialState))
+        {
+            state = state.setValue(FORMED, false);
+        }
+
         return state;
     }
 

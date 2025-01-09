@@ -1,0 +1,7 @@
+{
+    "parent": "leet_tech:block/quarry_frame_base",
+    "textures": {
+        "0": "leet_tech:block/quarry_frame_formed",
+        "particle": "leet_tech:block/quarry_frame_formed"
+    }
+}

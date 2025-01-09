@@ -52,6 +52,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider
         dropSelf(ModBlocks.ENERGY_RING_INPUT_PORT.get());
         dropSelf(ModBlocks.ENERGY_RING_OUTPUT_PORT.get());
         dropSelf(ModBlocks.ENERGY_RING_CASING.get());
+        dropSelf(ModBlocks.QUARRY_CONTROLLER.get());
         dropSelf(ModBlocks.QUARRY_FRAME.get());
 
         blockEntityLootTable(ModBlocks.ENERGY_CELL);

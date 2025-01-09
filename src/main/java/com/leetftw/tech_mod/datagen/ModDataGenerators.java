@@ -29,7 +29,7 @@ public class ModDataGenerators
 
         generator.addProvider(true, new ModBlockStateProvider(packOutput, existingFileHelper));
         generator.addProvider(true, new ModItemModelProvider(packOutput, existingFileHelper));
-        generator.addProvider(true, new ModClientItemsProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(true, new ModClientItemProvider(packOutput, lookupProvider, existingFileHelper));
         generator.addProvider(true, new ModRecipeProvider(packOutput, lookupProvider));
         generator.addProvider(true, new LootTableProvider(packOutput, Set.of(), List.of(new LootTableProvider.SubProviderEntry(
                 ModBlockLootTableProvider::new,
