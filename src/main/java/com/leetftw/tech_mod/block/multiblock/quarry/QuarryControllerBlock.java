@@ -70,7 +70,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     }
 
     // As complicated as this function looks, it's complexity is at max O(frame block count)
-    public boolean checkFormed(Level level, BlockPos pos)
+    public boolean checkFormed(Level level, BlockPos pos, List<BlockPos> cornerPositions)
     {
         // First check if we have a neighbouring corner piece facing up
         // corner piece = 3 connections
@@ -394,6 +394,13 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
             level.setBlock(blockPos, level.getBlockState(blockPos).setValue(StaticMultiBlockPart.FORMED, true), Block.UPDATE_CLIENTS);
             //level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Block: " + blockPos)));
         }
+
+        // Save the corners
+        if (cornerPositions != null)
+        {
+            cornerPositions.add(corners.get(0b000));
+            cornerPositions.add(corners.get(0b101));
+        }
         //level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Block count: " + blocks.size())));
 
         return true;
@@ -406,7 +413,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         // Otherwise, the formation is only checked when the player right clicks the machine
         if (state.getValue(StaticMultiBlockPart.FORMED))
         {
-            boolean formed = checkFormed(level, pos);
+            boolean formed = checkFormed(level, pos, null);
             level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, formed));
         }
     }
@@ -416,12 +423,18 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     {
         InteractionResult returnVal = super.useWithoutItem(state, level, pos, player, hitResult);
 
-        if (!level.isClientSide)
+        if (!level.isClientSide && !state.getValue(StaticMultiBlockPart.FORMED))
         {
-            boolean result = checkFormed(level, pos);
+            List<BlockPos> corners = new ArrayList<>();
+            boolean result = checkFormed(level, pos, corners);
+            if (result)
+            {
+                Optional<QuarryControllerBlockEntity> beOptional = level.getBlockEntity(pos, ModBlockEntities.QUARRY_CONTROLLER_BE.get());
+                beOptional.ifPresent(be ->
+                        be.setCornerOne(corners.get(0)).setCornerTwo(corners.get(1)).setCurrentY(corners.get(0).getY() - 1).resetPos());
+            }
             level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, result));
-
-           level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Formed: " + result)));
+            level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Formed: " + result)));
         }
 
         return returnVal;
