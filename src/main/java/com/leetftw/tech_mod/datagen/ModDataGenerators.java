@@ -8,7 +8,6 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import java.util.List;
@@ -24,12 +23,9 @@ public class ModDataGenerators
     {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
-        ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        generator.addProvider(true, new ModBlockStateProvider(packOutput, existingFileHelper));
-        generator.addProvider(true, new ModItemModelProvider(packOutput, existingFileHelper));
-        generator.addProvider(true, new ModClientItemProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(true, new ModModelProvider(packOutput));
         generator.addProvider(true, new ModRecipeProvider(packOutput, lookupProvider));
         generator.addProvider(true, new LootTableProvider(packOutput, Set.of(), List.of(new LootTableProvider.SubProviderEntry(
                 ModBlockLootTableProvider::new,

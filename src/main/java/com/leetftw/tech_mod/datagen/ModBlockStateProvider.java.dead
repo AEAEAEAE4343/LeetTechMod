@@ -5,17 +5,22 @@ import com.leetftw.tech_mod.block.EnergyStorageBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.block.multiblock.quarry.QuarryFrameBlock;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.neoforged.neoforge.client.model.generators.*;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
-public class ModBlockStateProvider extends BlockStateProvider
+public class ModBlockStateProvider extends BlockModelGenerators
 {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper)
     {
@@ -39,54 +44,6 @@ public class ModBlockStateProvider extends BlockStateProvider
     @Override
     protected void registerStatesAndModels()
     {
-        simpleBlockWithItemCubeAll(ModBlocks.AESTHETIC_BLOCK);
-        simpleBlockWithItemCubeAll(ModBlocks.BUDDING_AESTHETIC_BLOCK);
-        simpleBlockWithItemCubeAll(ModBlocks.ENERGY_RING_CASING);
-
-        energyCell(ModBlocks.ENERGY_CELL);
-        energyCell(ModBlocks.CREATIVE_ENERGY_CELL);
-
-        ResourceLocation refinery_front = modLoc("block/gem_refinery_front");
-        ResourceLocation refinery_side = modLoc("block/gem_refinery_side");
-        horizontalBlock(ModBlocks.GEM_REFINERY.get(), refinery_side, refinery_front, refinery_side);
-        itemModels().simpleBlockItem(ModBlocks.GEM_REFINERY.get());
-
-        ResourceLocation crystallizer_front = modLoc("block/crystallizer_front");
-        ResourceLocation crystallizer_side = modLoc("block/crystallizer_side");
-        horizontalBlock(ModBlocks.CRYSTALLIZER.get(), crystallizer_side, crystallizer_front, crystallizer_side);
-        itemModels().simpleBlockItem(ModBlocks.CRYSTALLIZER.get());
-
-        ResourceLocation crystal_injector_front = modLoc("block/crystal_injector_front");
-        ResourceLocation crystal_injector_side = modLoc("block/crystal_injector_side");
-        horizontalBlock(ModBlocks.CRYSTAL_INJECTOR.get(), crystal_injector_side, crystal_injector_front, crystal_injector_side);
-        itemModels().simpleBlockItem(ModBlocks.CRYSTAL_INJECTOR.get());
-
-        ResourceLocation energy_ring_input_port_front = modLoc("block/energy_ring_input_port_front");
-        ResourceLocation energy_ring_output_port_front = modLoc("block/energy_ring_output_port_front");
-        ResourceLocation energy_ring_casing = modLoc("block/energy_ring_casing");
-        horizontalBlock(ModBlocks.ENERGY_RING_INPUT_PORT.get(), energy_ring_casing, energy_ring_input_port_front, energy_ring_casing);
-        itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_INPUT_PORT.get());
-        horizontalBlock(ModBlocks.ENERGY_RING_OUTPUT_PORT.get(), energy_ring_casing, energy_ring_output_port_front, energy_ring_casing);
-        itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_OUTPUT_PORT.get());
-
-        VariantBlockStateBuilder variantBuilder = this.getVariantBuilder(ModBlocks.ENERGY_RING_CONTROLLER.get());
-        variantBuilder.forAllStates(state ->
-                ConfiguredModel.builder().modelFile(models().cube("block/energy_ring_controller",
-                                        modLoc("block/energy_ring_casing"),
-                                        modLoc("block/energy_ring_casing"),
-                                        modLoc("block/energy_ring_controller_side"),
-                                        modLoc("block/energy_ring_controller_side"),
-                                        modLoc("block/energy_ring_controller_side"),
-                                        modLoc("block/energy_ring_controller_side"))
-                                .texture("particle", modLoc("block/energy_ring_casing"))
-                        ).build());
-        itemModels().simpleBlockItem(ModBlocks.ENERGY_RING_CONTROLLER.get());
-
-        ResourceLocation quarry_controller_front = modLoc("block/quarry_controller_front");
-        ResourceLocation quarry_controller_side = modLoc("block/quarry_controller_side");
-        horizontalBlock(ModBlocks.QUARRY_CONTROLLER.get(), quarry_controller_side, quarry_controller_front, quarry_controller_side);
-        itemModels().simpleBlockItem(ModBlocks.QUARRY_CONTROLLER.get());
-
         ResourceLocation quarryFrameBase = modLoc("block/quarry_frame_base");
         ResourceLocation quarryFrameExtension = modLoc("block/quarry_frame_extension");
         MultiPartBlockStateBuilder multipartBuilder = this.getMultipartBuilder(ModBlocks.QUARRY_FRAME.get());
@@ -239,5 +196,17 @@ public class ModBlockStateProvider extends BlockStateProvider
     private void simpleBlockWithItemCubeAll(DeferredBlock<?> deferredBlock)
     {
         simpleBlock(deferredBlock.get(), cubeAll(deferredBlock.get()));
+    }
+
+    @Override
+    protected BlockStateProviderType<?> type()
+    {
+        return BlockStateProviderType.SIMPLE_STATE_PROVIDER;
+    }
+
+    @Override
+    public BlockState getState(RandomSource randomSource, BlockPos blockPos)
+    {
+        return null;
     }
 }

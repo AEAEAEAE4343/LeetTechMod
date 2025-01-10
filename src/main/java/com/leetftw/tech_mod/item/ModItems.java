@@ -16,6 +16,7 @@ import java.util.function.Function;
 public class ModItems
 {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LeetTechMod.MOD_ID);
+    // TODO: Factor out this terrible hack by giving ModBlocks its own item register
     public static final ArrayList<DeferredItem<Item>> SIMPLE_MODEL_ITEMS = new ArrayList<>();
 
     public static final DeferredItem<Item> AESTHETIC_DUST = registerSimpleItemSimpleModel("aesthetic_dust", new Item.Properties());

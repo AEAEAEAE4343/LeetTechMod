@@ -5,16 +5,15 @@ import com.leetftw.tech_mod.datagen.items.ClientItemProvider;
 import com.leetftw.tech_mod.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.concurrent.CompletableFuture;
 
 public class ModClientItemProvider extends ClientItemProvider
 {
-    public ModClientItemProvider(PackOutput output, CompletableFuture lookupProvider, ExistingFileHelper existingFileHelper)
+    public ModClientItemProvider(PackOutput output, CompletableFuture lookupProvider)
     {
-        super(output, lookupProvider, existingFileHelper);
+        super(output, lookupProvider);
     }
 
     @Override

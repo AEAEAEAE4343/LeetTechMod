@@ -25,6 +25,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
+
 public class ModBlocks
 {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(LeetTechMod.MOD_ID);
@@ -153,6 +155,8 @@ public class ModBlocks
     public static final DeferredBlock<QuarryFrameBlock> QUARRY_FRAME = BLOCKS.registerBlock("quarry_frame",
             properties -> new QuarryFrameBlock(properties.noOcclusion().dynamicShape()));
     public static final DeferredItem<BlockItem> QUARRY_FRAME_ITEM = ModItems.ITEMS.registerSimpleBlockItem(QUARRY_FRAME);
+
+    public static final List<DeferredBlock<? extends Block>> HAS_CUSTOM_ITEM_MODEL = List.of(AESTHETIC_CLUSTER, SMALL_AESTHETIC_BUD, MEDIUM_AESTHETIC_BUD, LARGE_AESTHETIC_BUD, LARGE_AESTHETIC_BUD);
 
     public static void register(IEventBus event)
     {
