@@ -2,6 +2,7 @@ package com.leetftw.tech_mod.datagen;
 
 import com.google.gson.JsonPrimitive;
 import com.leetftw.tech_mod.LeetTechMod;
+import com.leetftw.tech_mod.block.AestheticClusterBlock;
 import com.leetftw.tech_mod.block.EnergyStorageBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.multiblock.quarry.QuarryFrameBlock;
@@ -13,6 +14,9 @@ import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplate;
+import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -151,6 +155,23 @@ public class ModBlockModelGenerator extends BlockModelGenerators
         blockStateOutput.accept(generator);
     }
 
+    @SafeVarargs
+    private <T extends AestheticClusterBlock> void createAestheticClusters(T... blocks)
+    {
+        ModelTemplate template = new ExtendedModelTemplateBuilder()
+                .parent(ResourceLocation.fromNamespaceAndPath("minecraft", "block/cross"))
+                .requiredTextureSlot(TextureSlot.CROSS)
+                .renderType("cutout")
+                .build();
+
+        for (T block : blocks)
+        {
+            ResourceLocation model = template.create(block, TextureMapping.cross(block), this.modelOutput);
+            MultiVariantGenerator generator = MultiVariantGenerator.multiVariant(block, Variant.variant().with(VariantProperties.MODEL, model)).with(this.createColumnWithFacing());
+            blockStateOutput.accept(generator);
+        }
+    }
+
     @Override
     public void run()
     {
@@ -180,10 +201,10 @@ public class ModBlockModelGenerator extends BlockModelGenerators
 
         createQuarryFrame(ModBlocks.QUARRY_FRAME);
 
-        createAmethystCluster(ModBlocks.AESTHETIC_CLUSTER.get());
-        createAmethystCluster(ModBlocks.SMALL_AESTHETIC_BUD.get());
-        createAmethystCluster(ModBlocks.MEDIUM_AESTHETIC_BUD.get());
-        createAmethystCluster(ModBlocks.LARGE_AESTHETIC_BUD.get());
+        createAestheticClusters(ModBlocks.AESTHETIC_CLUSTER.get(),
+                ModBlocks.SMALL_AESTHETIC_BUD.get(),
+                ModBlocks.MEDIUM_AESTHETIC_BUD.get(),
+                ModBlocks.LARGE_AESTHETIC_BUD.get());
 
         createParticleOnlyBlock(ModBlocks.LIQUID_AESTHETIC_BLOCK.get());
     }
