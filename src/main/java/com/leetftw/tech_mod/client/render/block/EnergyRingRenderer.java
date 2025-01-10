@@ -1,5 +1,6 @@
 package com.leetftw.tech_mod.client.render.block;
 
+import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingControllerBlockEntity;
 import com.leetftw.tech_mod.client.render.block.model.EnergyRingUnbakedModel;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -43,7 +44,7 @@ public class EnergyRingRenderer implements BlockEntityRenderer<EnergyRingControl
     @Override
     public AABB getRenderBoundingBox(EnergyRingControllerBlockEntity blockEntity)
     {
-        if (!blockEntity.isFormed())
+        if (!blockEntity.getBlockState().getValue(StaticMultiBlockPart.FORMED))
             return BlockEntityRenderer.super.getRenderBoundingBox(blockEntity);
 
         BlockPos pos = blockEntity.getBlockPos();
@@ -76,7 +77,7 @@ public class EnergyRingRenderer implements BlockEntityRenderer<EnergyRingControl
     @Override
     public void render(EnergyRingControllerBlockEntity energyRingControllerBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay)
     {
-        if (!energyRingControllerBlockEntity.isFormed())
+        if (!energyRingControllerBlockEntity.getBlockState().getValue(StaticMultiBlockPart.FORMED))
             return;
 
         poseStack.pushPose();

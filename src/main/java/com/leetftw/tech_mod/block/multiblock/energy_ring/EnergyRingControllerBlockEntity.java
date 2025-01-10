@@ -30,9 +30,6 @@ import java.util.List;
 
 public class EnergyRingControllerBlockEntity extends BaseLeetBlockEntity
 {
-    private boolean formed;
-    private List<Tuple<BlockPos, BlockState>> formation = new ArrayList<>();
-
     public EnergyRingControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
         super(type, pos, blockState);
@@ -40,7 +37,7 @@ public class EnergyRingControllerBlockEntity extends BaseLeetBlockEntity
 
     public void tick(Level pLevel, BlockPos pPos, BlockState pState)
     {
-        if (!formed) tryForm();
+        if (!pState.getValue(StaticMultiBlockPart.FORMED)) tryForm();
         else checkFormation();
     }
 
@@ -91,9 +88,7 @@ public class EnergyRingControllerBlockEntity extends BaseLeetBlockEntity
             }
         }
 
-        formed = true;
         level.setBlockAndUpdate(getBlockPos(), getBlockState().setValue(StaticMultiBlockPart.FORMED, true));
-        setChanged();
     }
 
     private void checkFormation()
@@ -138,9 +133,7 @@ public class EnergyRingControllerBlockEntity extends BaseLeetBlockEntity
                 level.setBlockAndUpdate(absolutePos, stateAtOffset.setValue(StaticMultiBlockPart.FORMED, false));
         }
 
-        formed = false;
         level.setBlockAndUpdate(getBlockPos(), getBlockState().setValue(StaticMultiBlockPart.FORMED, false));
-        setChanged();
     }
 
     @Override
@@ -242,56 +235,7 @@ public class EnergyRingControllerBlockEntity extends BaseLeetBlockEntity
     }
 
     @Override
-    public void setChanged()
-    {
-        super.setChanged();
-        if (level != null && !level.isClientSide)
-        {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
-    }
-
-    // Create an update tag here, like above.
-    @Override
-    public @NotNull CompoundTag getUpdateTag(@NotNull HolderLookup.Provider registries)
-    {
-        CompoundTag tag = new CompoundTag();
-        saveAdditional(tag, registries);
-        return tag;
-    }
-
-    // Return our packet here. This method returning a non-null result tells the game to use this packet for syncing.
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket()
-    {
-        // The packet uses the CompoundTag returned by #getUpdateTag. An alternative overload of #create exists
-        // that allows you to specify a custom update tag, including the ability to omit data the client might not need.
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries)
-    {
-        super.saveAdditional(pTag, registries);
-        pTag.putBoolean("energy_ring_controller.formed", formed);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries)
-    {
-        super.loadAdditional(pTag, registries);
-        formed = pTag.getBoolean("energy_ring_controller.formed");
-    }
-
-    @Override
     public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
         return null;
-    }
-
-    public boolean isFormed()
-    {
-        return formed;
     }
 }

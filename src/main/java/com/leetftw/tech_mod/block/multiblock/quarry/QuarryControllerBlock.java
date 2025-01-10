@@ -416,8 +416,10 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     {
         InteractionResult returnVal = super.useWithoutItem(state, level, pos, player, hitResult);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide)
+        {
             boolean result = checkFormed(level, pos);
+            level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, result));
 
            level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Formed: " + result)));
         }

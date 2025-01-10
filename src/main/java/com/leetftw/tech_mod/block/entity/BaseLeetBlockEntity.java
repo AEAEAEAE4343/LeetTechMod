@@ -22,6 +22,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -977,6 +978,15 @@ public abstract class BaseLeetBlockEntity extends BlockEntity implements MenuPro
         super.removeComponentsFromTag(tag);
         tag.remove("base_leet_be.energy");
         tag.remove("base_leet_be.items");
+    }
+
+    public void setChangedAndUpdate()
+    {
+        setChanged();
+        if (level != null && !level.isClientSide)
+        {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+        }
     }
 
     /// Returns the amount of item slots the block has

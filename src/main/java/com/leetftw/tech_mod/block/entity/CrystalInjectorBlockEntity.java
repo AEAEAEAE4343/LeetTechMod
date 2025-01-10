@@ -46,7 +46,13 @@ public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
         targetBlock = null;
         progress = 0;
         laserLength = 0;
-        setChanged();
+        setChangedAndUpdate();
+    }
+
+    private void setProgress(int progress)
+    {
+        this.progress = progress;
+        setChangedAndUpdate();
     }
 
     private void finishCraft(Level level)
@@ -103,14 +109,13 @@ public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
             storedFluid.setAmount(storedFluid.getAmount() - FLUID_USAGE);
             energySetStored(energyGetStored() - ENERGY_USAGE);
 
-            progress++;
+            setProgress(progress + 1);
 
             // If the conversion is done, we change the block into budding aesthetic
             if (progress >= MAX_PROGRESS)
             {
                 finishCraft(level);
             }
-            else setChanged();
         }
     }
 
@@ -172,16 +177,6 @@ public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
     @Override
     protected int energyGetTransferRate() {
         return 1000;
-    }
-
-    @Override
-    public void setChanged()
-    {
-        super.setChanged();
-        if (level != null && !level.isClientSide)
-        {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
     }
 
     // Create an update tag here, like above.

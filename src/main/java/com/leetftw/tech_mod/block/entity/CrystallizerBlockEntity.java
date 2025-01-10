@@ -71,13 +71,11 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
             {
                 energySetStored(energyGetStored() - 128);
                 setProgress(progress + 1);
-                setChanged(level, pos, state);
             }
 
             if (progress >= maxProgress) {
                 craftItem();
                 setProgress(0);
-                setChanged(level, pos, state);
             }
         }
         else setProgress(0);
@@ -106,6 +104,7 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
     private void setProgress(int newProg)
     {
         progress = newProg;
+        setChangedAndUpdate();
 
         /*if (progress == 0) setItem(8, ItemStack.EMPTY);
         else setItem(8, new ItemStack(Items.DIRT, progress / 2));*/
