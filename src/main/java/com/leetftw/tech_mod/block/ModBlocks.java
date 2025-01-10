@@ -101,7 +101,7 @@ public class ModBlocks
 
     public static final DeferredBlock<AestheticClusterBlock> AESTHETIC_CLUSTER = BLOCKS.registerBlock("aesthetic_cluster",
             properties -> new AestheticClusterBlock(7, 3, properties), AESTHETIC_CLUSTER_BEHAVIOR);
-    public static final DeferredItem<BlockItem> AESTHETIC_ClUSTER_ITEM = ModItems.ITEMS.registerSimpleBlockItem(AESTHETIC_CLUSTER);
+    public static final DeferredItem<BlockItem> AESTHETIC_CLUSTER_ITEM = ModItems.ITEMS.registerSimpleBlockItem(AESTHETIC_CLUSTER);
 
     public static final DeferredBlock<AestheticClusterBlock> SMALL_AESTHETIC_BUD = BLOCKS.registerBlock("small_aesthetic_bud",
             properties -> new AestheticClusterBlock(3, 4, properties),

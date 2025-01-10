@@ -90,7 +90,7 @@ public class LeetTechMod
             event.accept(ModBlocks.SMALL_AESTHETIC_BUD_ITEM);
             event.accept(ModBlocks.MEDIUM_AESTHETIC_BUD_ITEM);
             event.accept(ModBlocks.LARGE_AESTHETIC_BUD_ITEM);
-            event.accept(ModBlocks.AESTHETIC_ClUSTER_ITEM);
+            event.accept(ModBlocks.AESTHETIC_CLUSTER_ITEM);
         }
     }
 

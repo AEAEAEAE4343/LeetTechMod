@@ -1,12 +1,15 @@
 package com.leetftw.tech_mod.datagen;
 
 import com.google.gson.JsonPrimitive;
+import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.EnergyStorageBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
+import com.leetftw.tech_mod.block.multiblock.quarry.QuarryFrameBlock;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
 import net.minecraft.client.data.models.blockstates.*;
 import net.minecraft.client.data.models.model.*;
+import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -47,13 +50,13 @@ public class ModBlockModelGenerator extends BlockModelGenerators
         super(blockStateOutput, itemModelOutput, modelOutput);
     }
 
-    private <T extends Block> void createEnergyCell(DeferredBlock<T> block)
+    private <T extends Block> void createEnergyCell(DeferredBlock<T> block, int itemFillState)
     {
         MultiVariantGenerator generator = MultiVariantGenerator.multiVariant(block.get()).with(
                 PropertyDispatch.properties(EnergyStorageBlock.FILL_STATE, BlockStateProperties.HORIZONTAL_FACING)
                         .generate((fillState, facing) ->
                         {
-                            ResourceLocation variantLocation = block.getId().withSuffix("_" + fillState);
+                            ResourceLocation variantLocation = block.getId().withPrefix("block/").withSuffix("_" + fillState);
                             return Variant.variant().with(VariantProperties.MODEL, variantLocation)
                                     .with(Y_ROT, (int)(facing.toYRot() + 180) % 360);
                         })
@@ -63,11 +66,89 @@ public class ModBlockModelGenerator extends BlockModelGenerators
         for (int fillState : EnergyStorageBlock.FILL_STATE.getPossibleValues())
         {
             ModelTemplates.CUBE_ORIENTABLE.createWithSuffix(block.get(), "_" + fillState, new TextureMapping()
-                            .put(TextureSlot.TOP, block.getId().withSuffix("_side"))
-                            .put(TextureSlot.SIDE, block.getId().withSuffix("_side"))
-                            .put(TextureSlot.FRONT, block.getId().withSuffix("_front_" + fillState)),
+                            .put(TextureSlot.TOP, block.getId().withPrefix("block/").withSuffix("_side"))
+                            .put(TextureSlot.SIDE, block.getId().withPrefix("block/").withSuffix("_side"))
+                            .put(TextureSlot.FRONT, block.getId().withPrefix("block/").withSuffix("_front_" + fillState)),
                     modelOutput);
         }
+
+        itemModelOutput.register(block.asItem(), new ClientItem(ItemModelUtils.plainModel(block.getId().withPrefix("block/").withSuffix("_" + itemFillState)), ClientItem.Properties.DEFAULT));
+    }
+
+    private <T extends QuarryFrameBlock> void createQuarryFrame(DeferredBlock<T> block)
+    {
+        ResourceLocation quarryFrameBase = ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "block/quarry_frame_base");
+        ResourceLocation quarryFrameExtension = ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "block/quarry_frame_extension");
+
+        MultiPartGenerator generator = MultiPartGenerator.multiPart(block.get())
+                .with(Condition.condition().term(QuarryFrameBlock.FORMED, false),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameBase))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, false)
+                                .term(QuarryFrameBlock.NORTH_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, false)
+                                .term(QuarryFrameBlock.EAST_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension)
+                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, false)
+                                .term(QuarryFrameBlock.SOUTH_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension)
+                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, false)
+                                .term(QuarryFrameBlock.WEST_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension)
+                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, false)
+                                .term(QuarryFrameBlock.UP_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension)
+                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R270))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, false)
+                                .term(QuarryFrameBlock.DOWN_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension)
+                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R90))
+
+                // TODO: REMOVE THIS
+                //       THIS ONLY EXISTS FOR DEBUGGING PURPOSES
+                .with(Condition.condition().term(QuarryFrameBlock.FORMED, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameBase.withSuffix("_formed")))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, true)
+                                .term(QuarryFrameBlock.NORTH_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension.withSuffix("_formed")))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, true)
+                                .term(QuarryFrameBlock.EAST_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension.withSuffix("_formed"))
+                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, true)
+                                .term(QuarryFrameBlock.SOUTH_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension.withSuffix("_formed"))
+                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, true)
+                                .term(QuarryFrameBlock.WEST_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension.withSuffix("_formed"))
+                                .with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, true)
+                                .term(QuarryFrameBlock.UP_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension.withSuffix("_formed"))
+                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R270))
+                .with(Condition.condition()
+                                .term(QuarryFrameBlock.FORMED, true)
+                                .term(QuarryFrameBlock.DOWN_CON, true),
+                        Variant.variant().with(VariantProperties.MODEL, quarryFrameExtension.withSuffix("_formed"))
+                                .with(VariantProperties.X_ROT, VariantProperties.Rotation.R90));
+
+        itemModelOutput.register(block.asItem(), new ClientItem(ItemModelUtils.plainModel(block.getId().withPrefix("block/").withSuffix("_base")), ClientItem.Properties.DEFAULT));
+        blockStateOutput.accept(generator);
     }
 
     @Override
@@ -94,16 +175,16 @@ public class ModBlockModelGenerator extends BlockModelGenerators
                         .put(TextureSlot.END, TextureMapping.getBlockTexture(ModBlocks.ENERGY_RING_CASING.get())),
                 ModelTemplates.CUBE_COLUMN));
 
-        createEnergyCell(ModBlocks.ENERGY_CELL);
-        createEnergyCell(ModBlocks.CREATIVE_ENERGY_CELL);
+        createEnergyCell(ModBlocks.ENERGY_CELL, 0);
+        createEnergyCell(ModBlocks.CREATIVE_ENERGY_CELL, EnergyStorageBlock.FILL_STATE.getPossibleValues().stream().max(Integer::compareTo).get());
 
-        // PLACEHOLDERS!!!!
-        // TODO: IMPLEMENT THESE!!!!
-        createTrivialCube(ModBlocks.AESTHETIC_CLUSTER.get());
-        createTrivialCube(ModBlocks.SMALL_AESTHETIC_BUD.get());
-        createTrivialCube(ModBlocks.MEDIUM_AESTHETIC_BUD.get());
-        createTrivialCube(ModBlocks.LARGE_AESTHETIC_BUD.get());
-        createTrivialCube(ModBlocks.LIQUID_AESTHETIC_BLOCK.get());
-        createTrivialCube(ModBlocks.QUARRY_FRAME.get());
+        createQuarryFrame(ModBlocks.QUARRY_FRAME);
+
+        createAmethystCluster(ModBlocks.AESTHETIC_CLUSTER.get());
+        createAmethystCluster(ModBlocks.SMALL_AESTHETIC_BUD.get());
+        createAmethystCluster(ModBlocks.MEDIUM_AESTHETIC_BUD.get());
+        createAmethystCluster(ModBlocks.LARGE_AESTHETIC_BUD.get());
+
+        createParticleOnlyBlock(ModBlocks.LIQUID_AESTHETIC_BLOCK.get());
     }
 }
