@@ -70,6 +70,8 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     }
 
     // As complicated as this function looks, it's complexity is at max O(frame block count)
+    // TODO: potentially optimize this function
+    // TODO: output to chat when this function fails
     public boolean checkFormed(Level level, BlockPos pos, List<BlockPos> cornerPositions)
     {
         // First check if we have a neighbouring corner piece facing up
@@ -384,7 +386,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
             edges.add(edge);
         }
 
-        // Finally we now we have a correct formation
+        // Finally we now have a correct formation
         // Set FORMED to true for all blocks
         ArrayList<BlockPos> blocks = new ArrayList<>();
         blocks.addAll(corners);
@@ -399,7 +401,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         if (cornerPositions != null)
         {
             cornerPositions.add(corners.get(0b000));
-            cornerPositions.add(corners.get(0b101));
+            cornerPositions.add(corners.get(0b111));
         }
         //level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Block count: " + blocks.size())));
 

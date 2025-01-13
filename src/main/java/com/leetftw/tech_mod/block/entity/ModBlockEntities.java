@@ -8,6 +8,7 @@ import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingIOBlockEntity
 import com.leetftw.tech_mod.block.multiblock.quarry.QuarryControllerBlockEntity;
 import com.leetftw.tech_mod.client.render.block.CrystalInjectorRenderer;
 import com.leetftw.tech_mod.client.render.block.EnergyRingRenderer;
+import com.leetftw.tech_mod.client.render.block.QuarryRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -163,6 +164,7 @@ public class ModBlockEntities
     {
         event.registerBlockEntityRenderer(CRYSTAL_INJECTOR_BE.get(), CrystalInjectorRenderer::new);
         event.registerBlockEntityRenderer(ENERGY_RING_CONTROLLER_BE.get(), EnergyRingRenderer::new);
+        event.registerBlockEntityRenderer(QUARRY_CONTROLLER_BE.get(), QuarryRenderer::new);
     }
 
     @SubscribeEvent

@@ -120,6 +120,7 @@ public class QuarryFrameBlock extends StaticMultiBlockPart
         return state;
     }
 
+    // TODO: this potentially causes update loops
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston)
     {

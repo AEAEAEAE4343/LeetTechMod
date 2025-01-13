@@ -5,11 +5,16 @@ import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.item.MachineUpgradeItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -47,8 +52,8 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
     private final int BASE_ENERGY_USAGE = 2048;
     private final int BASE_PROCESSING_TIME = 20;
 
-    private BlockPos cornerOne = null;
-    private BlockPos cornerTwo = null;
+    private BlockPos cornerOne = BlockPos.ZERO;
+    private BlockPos cornerTwo = BlockPos.ZERO;
 
     private int progress = 0;
     private int currentY = 0;
@@ -67,23 +72,42 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 
     public QuarryControllerBlockEntity setCornerOne(BlockPos cornerOne) {
         this.cornerOne = cornerOne.subtract(getBlockPos());
+        setChangedAndUpdate();
         return this;
+    }
+
+    public BlockPos getCornerOne()
+    {
+        return cornerOne.offset(getBlockPos());
     }
 
     public QuarryControllerBlockEntity setCornerTwo(BlockPos cornerTwo) {
         this.cornerTwo = cornerTwo.subtract(getBlockPos());
+        setChangedAndUpdate();
         return this;
+    }
+
+    public BlockPos getCornerTwo()
+    {
+        return cornerTwo.offset(getBlockPos());
     }
 
     public QuarryControllerBlockEntity setCurrentY(int currentY) {
         this.currentY = currentY;
+        setChangedAndUpdate();
         return this;
+    }
+
+    public BlockPos getTargetPosition()
+    {
+        return getBlockPos().offset(cornerOne).offset(currentBlockRelX + 1, 0, currentBlockRelZ + 1).atY(currentY);
     }
 
     public void resetPos() {
         currentBlockRelX = 0;
         currentBlockRelZ = 0;
         currentState = State.Idling;
+        setChangedAndUpdate();
     }
 
     public QuarryControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
@@ -129,6 +153,8 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
                 currentY--;
             }
         }
+
+        setChangedAndUpdate();
     }
 
     @Override
@@ -143,7 +169,7 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
         }
 
         // Find the block at the current position
-        BlockPos targetPos = pPos.offset(cornerOne).offset(currentBlockRelX + 1, 0, currentBlockRelZ + 1).atY(currentY);
+        BlockPos targetPos = getTargetPosition();
         BlockState targetBlock = pLevel.getBlockState(targetPos);
 
         // My favorite CS concept: state machine
@@ -202,7 +228,7 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
         {
             //level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Mining air: " + targetPos)));
             // Empty block, go into idling state
-            currentState = State.Idling;
+            currentState = State.MiningEmpty;
             progress = 5;
             return;
         }
@@ -273,6 +299,53 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
     @Override
     protected int energyGetTransferRate() {
         return 10000;
+    }
+
+    @Override
+    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        //
+        //    private int currentY = 0;
+        //    private int currentBlockRelX = 0;
+        //    private int currentBlockRelZ = 0;
+        super.loadAdditional(pTag, registries);
+        if (pTag.contains("quarry_c1"))
+            cornerOne = BlockPos.of(pTag.getLong("quarry_c1"));
+        if (pTag.contains("quarry_c2"))
+            cornerTwo = BlockPos.of(pTag.getLong("quarry_c2"));
+        if (pTag.contains("quarry_x"))
+            currentBlockRelX = pTag.getInt("quarry_x");
+        if (pTag.contains("quarry_y"))
+            currentY = pTag.getInt("quarry_y");
+        if (pTag.contains("quarry_z"))
+            currentBlockRelZ = pTag.getInt("quarry_z");
+        if (pTag.contains("quarry_progress"))
+            progress = pTag.getInt("quarry_progress");
+        if (pTag.contains("quarry_state"))
+            currentState = State.valueOf(pTag.getString("quarry_state"));
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
+        if (cornerOne != null) pTag.putLong("quarry_c1", cornerOne.asLong());
+        if (cornerOne != null) pTag.putLong("quarry_c2", cornerTwo.asLong());
+        pTag.putInt("quarry_x", currentBlockRelX);
+        pTag.putInt("quarry_y", currentY);
+        pTag.putInt("quarry_z", currentBlockRelZ);
+        pTag.putInt("quarry_progress", progress);
+        pTag.putString("quarry_state", currentState.name());
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, registries);
+        return tag;
+    }
+
+    @Override
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
