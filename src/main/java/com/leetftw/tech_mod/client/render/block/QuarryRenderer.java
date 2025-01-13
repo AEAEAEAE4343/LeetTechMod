@@ -1,5 +1,6 @@
 package com.leetftw.tech_mod.client.render.block;
 
+import com.google.common.collect.Maps;
 import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
@@ -36,20 +37,21 @@ import java.util.stream.IntStream;
 
 public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlockEntity>
 {
+    private static MultiPartBakedModel fullFrameModel;
+    private static final Map<Direction, BakedModel> partialModels = Maps.newHashMap();
+
     public QuarryRenderer(BlockEntityRendererProvider.Context ctx)
     {
+        ResourceLocation baseModel = ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "quarry_frame");
+        ModelManager modelManager = Minecraft.getInstance().getModelManager();
 
-    }
+        BakedModel frameXModel = modelManager.getModel(new ModelResourceLocation(baseModel, "down=true,east=true,formed=false,north=true,south=true,up=true,west=true"));
+        if (!(frameXModel instanceof MultiPartBakedModel multiPartXModel))
+            throw new RuntimeException("Expected multipart Quarry Frame model! Got '" + frameXModel + "' instead!");
+        fullFrameModel = multiPartXModel;
 
-    private BlockState getFrameBlockState(boolean up, boolean down, boolean north, boolean east, boolean south, boolean west)
-    {
-        return ModBlocks.QUARRY_FRAME.get().defaultBlockState()
-                .setValue(QuarryFrameBlock.UP_CON, up)
-                .setValue(QuarryFrameBlock.DOWN_CON, down)
-                .setValue(QuarryFrameBlock.NORTH_CON, north)
-                .setValue(QuarryFrameBlock.EAST_CON, east)
-                .setValue(QuarryFrameBlock.SOUTH_CON, south)
-                .setValue(QuarryFrameBlock.WEST_CON, west);
+        for (Direction direction : Direction.values())
+            partialModels.put(direction, getPartialModel(fullFrameModel, direction));
     }
 
     // This function is probably going to receive some hate.
@@ -85,11 +87,6 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         return sideModel;
     }
 
-    private int getWorldLight(Level level, BlockPos pos)
-    {
-        return LightTexture.pack(level.getBrightness(LightLayer.BLOCK, pos), level.getBrightness(LightLayer.SKY, pos));
-    }
-
     @Override
     public AABB getRenderBoundingBox(QuarryControllerBlockEntity blockEntity)
     {
@@ -100,6 +97,11 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         BlockPos endCorner = blockEntity.getCornerTwo();
         BlockPos targetBlock = blockEntity.getTargetPosition();
         return AABB.encapsulatingFullBlocks(startCorner.atY(targetBlock.getY()), endCorner);
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen(QuarryControllerBlockEntity blockEntity) {
+        return true;
     }
 
     @Override
@@ -114,9 +116,15 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         return horizontalDistance < (double) this.getViewDistance();
     }
 
-    @Override
-    public boolean shouldRenderOffScreen(QuarryControllerBlockEntity blockEntity) {
-        return true;
+    private BlockState getFrameBlockState(boolean up, boolean down, boolean north, boolean east, boolean south, boolean west)
+    {
+        return ModBlocks.QUARRY_FRAME.get().defaultBlockState()
+                .setValue(QuarryFrameBlock.UP_CON, up)
+                .setValue(QuarryFrameBlock.DOWN_CON, down)
+                .setValue(QuarryFrameBlock.NORTH_CON, north)
+                .setValue(QuarryFrameBlock.EAST_CON, east)
+                .setValue(QuarryFrameBlock.SOUTH_CON, south)
+                .setValue(QuarryFrameBlock.WEST_CON, west);
     }
 
     // I can't thank the Bibliocraft dev anough for this:
@@ -148,9 +156,6 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
             || quarryBe.getLevel() == null)
             return;
 
-        ResourceLocation baseModel = ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "quarry_frame");
-        ModelManager modelManager = Minecraft.getInstance().getModelManager();
-
         BlockPos quarryPos = quarryBe.getBlockPos();
         BlockPos startCorner = quarryBe.getCornerOne();
         BlockPos endCorner = quarryBe.getCornerTwo();
@@ -165,10 +170,6 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         // Get quad renderer
         VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.SOLID);
 
-        BakedModel frameXModel = modelManager.getModel(new ModelResourceLocation(baseModel, "down=true,east=true,formed=false,north=true,south=true,up=true,west=true"));
-        if (!(frameXModel instanceof MultiPartBakedModel partBakedModel))
-            return;
-
         //
         // Render fake frame along z
         //
@@ -177,7 +178,7 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         BlockState frameState = getFrameBlockState(false, false, true, false, true, false);
 
         // Render start part
-        BakedModel partialModel = getPartialModel(partBakedModel, Direction.SOUTH);
+        BakedModel partialModel = partialModels.get(Direction.SOUTH);
         renderModel(partialModel, frameState, quarryBe.getLevel(), new BlockPos(targetBlock.getX(), endCorner.getY(), startCorner.getZ()),
                 quarryBe.getModelData(), multiBufferSource, poseStack);
 
@@ -187,14 +188,14 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         {
             if (z != fakeFrameZ)
             {
-                renderModel(partBakedModel, frameState, quarryBe.getLevel(), new BlockPos(targetBlock.getX(), endCorner.getY(), z + quarryPos.getZ()),
+                renderModel(fullFrameModel, frameState, quarryBe.getLevel(), new BlockPos(targetBlock.getX(), endCorner.getY(), z + quarryPos.getZ()),
                         quarryBe.getModelData(), multiBufferSource, poseStack);
             }
             poseStack.translate(0, 0, 1);
         }
 
         // Render end part
-        partialModel = getPartialModel(partBakedModel, Direction.NORTH);
+        partialModel = partialModels.get(Direction.NORTH);
         renderModel(partialModel, frameState, quarryBe.getLevel(), new BlockPos(targetBlock.getX(), endCorner.getY(), endCorner.getZ()),
                 quarryBe.getModelData(), multiBufferSource, poseStack);
         poseStack.popPose();
@@ -207,7 +208,7 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         frameState = getFrameBlockState(false, false, false, true, false, true);
 
         // Render start part
-        partialModel = getPartialModel(partBakedModel, Direction.EAST);
+        partialModel = partialModels.get(Direction.EAST);
         renderModel(partialModel, frameState, quarryBe.getLevel(), new BlockPos(startCorner.getX(), endCorner.getY(), targetBlock.getZ()),
                 quarryBe.getModelData(), multiBufferSource, poseStack);
 
@@ -216,14 +217,14 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         for (int x = startCorner.getX() - quarryPos.getX() + 1; x < endCorner.getX() - quarryPos.getX(); x++) {
             if (x != fakeFrameX)
             {
-                renderModel(partBakedModel, frameState, quarryBe.getLevel(), new BlockPos(x + quarryPos.getX(), endCorner.getY(), targetBlock.getZ()),
+                renderModel(fullFrameModel, frameState, quarryBe.getLevel(), new BlockPos(x + quarryPos.getX(), endCorner.getY(), targetBlock.getZ()),
                         quarryBe.getModelData(), multiBufferSource, poseStack);
             }
             poseStack.translate(1, 0, 0);
         }
 
         // Render end part
-        partialModel = getPartialModel(partBakedModel, Direction.WEST);
+        partialModel = partialModels.get(Direction.WEST);
         renderModel(partialModel, frameState, quarryBe.getLevel(), new BlockPos(endCorner.getX(), endCorner.getY(), targetBlock.getZ()),
                 quarryBe.getModelData(), multiBufferSource, poseStack);
         poseStack.popPose();
@@ -232,13 +233,10 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         // Render fake frame going down along y
         //
         frameState = getFrameBlockState(true, true, false, false, false, false);
-        List<BakedQuad> quads = partBakedModel.getQuads(frameState, null,
-                quarryBe.getLevel().random, quarryBe.getModelData(), RenderType.SOLID);
-
         poseStack.pushPose();
         poseStack.translate(fakeFrameX, fakeFrameY - 1, fakeFrameZ);
         for (int y = endCorner.getY() - 1; y > targetBlock.getY(); y--) {
-            renderModel(partBakedModel, frameState, quarryBe.getLevel(), new BlockPos(targetBlock.getX(), y, targetBlock.getZ()),
+            renderModel(fullFrameModel, frameState, quarryBe.getLevel(), new BlockPos(targetBlock.getX(), y, targetBlock.getZ()),
                     quarryBe.getModelData(), multiBufferSource, poseStack);
             poseStack.translate(0, -1, 0);
         }
@@ -246,11 +244,9 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
 
         // Render fake frame x,y,z crossing
         frameState = getFrameBlockState(false, true, true, true, true, true);
-        quads = partBakedModel.getQuads(frameState, null,
-                quarryBe.getLevel().random, quarryBe.getModelData(), RenderType.SOLID);
         poseStack.pushPose();
         poseStack.translate(fakeFrameX, fakeFrameY, fakeFrameZ);
-        renderModel(partBakedModel, frameState, quarryBe.getLevel(), targetBlock.atY(endCorner.getY()),
+        renderModel(fullFrameModel, frameState, quarryBe.getLevel(), targetBlock.atY(endCorner.getY()),
                 quarryBe.getModelData(), multiBufferSource, poseStack);
         poseStack.popPose();
     }
