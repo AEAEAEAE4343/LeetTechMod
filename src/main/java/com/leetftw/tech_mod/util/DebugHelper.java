@@ -5,13 +5,15 @@ import net.minecraft.network.chat.Component;
 
 public class DebugHelper
 {
+    private static final boolean doDebug = false;
+
     public static void chatOutput(String message)
     {
-        Minecraft.getInstance().getSingleplayerServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal(message)));
+        if (doDebug) chatOutput(Component.literal(message));
     }
 
     public static void chatOutput(Component message)
     {
-        Minecraft.getInstance().getSingleplayerServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(message));
+        if (doDebug) Minecraft.getInstance().getSingleplayerServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(message));
     }
 }

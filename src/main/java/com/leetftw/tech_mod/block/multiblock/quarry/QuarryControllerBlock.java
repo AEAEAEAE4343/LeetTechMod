@@ -2,6 +2,8 @@ package com.leetftw.tech_mod.block.multiblock.quarry;
 
 import com.leetftw.tech_mod.block.BaseLeetEntityBlock;
 import com.leetftw.tech_mod.block.HorizontalLeetEntityBlock;
+import com.leetftw.tech_mod.block.ModBlocks;
+import com.leetftw.tech_mod.block.entity.BaseLeetBlockEntity;
 import com.leetftw.tech_mod.block.entity.ModBlockEntities;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.util.DebugHelper;
@@ -10,22 +12,31 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class QuarryControllerBlock extends HorizontalLeetEntityBlock
 {
+    ArrayList<Triple<BooleanProperty, BooleanProperty, BooleanProperty>> cornerConnections = new ArrayList<>();
+    ArrayList<Triple<Integer, Integer, Direction>> edgeConnections = new ArrayList<>();
+
     public QuarryControllerBlock(Properties properties)
     {
         super(properties);
@@ -33,6 +44,33 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         registerDefaultState(getStateDefinition().any()
                 .setValue(StaticMultiBlockPart.FORMED, false)
                 .setValue(FACING, Direction.NORTH));
+
+        generateConnections();
+    }
+
+    private void generateConnections()
+    {
+        cornerConnections.add(Triple.of(QuarryFrameBlock.SOUTH_CON, QuarryFrameBlock.UP_CON, QuarryFrameBlock.EAST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.NORTH_CON, QuarryFrameBlock.UP_CON, QuarryFrameBlock.EAST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.SOUTH_CON, QuarryFrameBlock.DOWN_CON, QuarryFrameBlock.EAST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.NORTH_CON, QuarryFrameBlock.DOWN_CON, QuarryFrameBlock.EAST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.SOUTH_CON, QuarryFrameBlock.UP_CON, QuarryFrameBlock.WEST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.NORTH_CON, QuarryFrameBlock.UP_CON, QuarryFrameBlock.WEST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.SOUTH_CON, QuarryFrameBlock.DOWN_CON, QuarryFrameBlock.WEST_CON));
+        cornerConnections.add(Triple.of(QuarryFrameBlock.NORTH_CON, QuarryFrameBlock.DOWN_CON, QuarryFrameBlock.WEST_CON));
+
+        edgeConnections.add(Triple.of(0b000, 0b100, Direction.EAST));
+        edgeConnections.add(Triple.of(0b000, 0b010, Direction.UP));
+        edgeConnections.add(Triple.of(0b000, 0b001, Direction.SOUTH));
+        edgeConnections.add(Triple.of(0b100, 0b110, Direction.UP));
+        edgeConnections.add(Triple.of(0b100, 0b101, Direction.SOUTH));
+        edgeConnections.add(Triple.of(0b010, 0b110, Direction.EAST));
+        edgeConnections.add(Triple.of(0b010, 0b011, Direction.SOUTH));
+        edgeConnections.add(Triple.of(0b001, 0b101, Direction.EAST));
+        edgeConnections.add(Triple.of(0b001, 0b011, Direction.UP));
+        edgeConnections.add(Triple.of(0b110, 0b111, Direction.SOUTH));
+        edgeConnections.add(Triple.of(0b101, 0b111, Direction.UP));
+        edgeConnections.add(Triple.of(0b011, 0b111, Direction.EAST));
     }
 
     private boolean isCorner(BlockState blockState)
@@ -72,8 +110,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
 
     // As complicated as this function looks, it's complexity is at max O(frame block count)
     // TODO: potentially optimize this function
-    // TODO: output to chat when this function fails
-    public boolean checkFormed(Level level, BlockPos pos, List<BlockPos> cornerPositions)
+    private FormationResult checkFormed(Level level, BlockPos pos, List<BlockPos> cornerPositions)
     {
         // First check if we have a neighbouring corner piece facing up
         // corner piece = 3 connections
@@ -94,7 +131,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
             startingPosition = pos.relative(Direction.WEST);
 
         if (startingPosition == null)
-            return false;
+            return new FormationResult(false, "Found no neighbouring frame corner blocks!", pos);
 
         // We go along each direction and check:
         // - Is it an edge that has two connections along the same axis? continue to next position
@@ -122,15 +159,21 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
                     // Valid corner piece
                     if (connections.size() == 3 && connections.contains(direction.getOpposite()))
                         break;
+
+                    return new FormationResult(false, "Invalid connection!", currentPos);
                 }
 
                 // Unexpected state: invalid formation.
-                return false;
+                return new FormationResult(false, "Expected frame block!", currentPos);
             }
 
             // If the loop succesfully exits, we know we have found a corner
             corners.add(currentPos);
         }
+
+        if (corners.get(0).distManhattan(corners.get(1)) < 3) return new FormationResult(false, "Corner too close! Minimum size: 4x4x3!", corners.get(1));
+        if (corners.get(0).distManhattan(corners.get(2)) < 3) return new FormationResult(false, "Corner too close! Minimum size: 4x4x3!", corners.get(2));
+        if (corners.get(0).distManhattan(corners.get(3)) < 2) return new FormationResult(false, "Corner too close! Minimum size: 4x4x3!", corners.get(3));
 
         // 2. If we haven't failed we now have 4 corners (the original starting position + one for each connection of the starting position).
         // Since it is a known shape (a rectangular prism) we can determine the four other corners easily. We check if those exist.
@@ -163,228 +206,35 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         corners.add(new BlockPos(xArray[1], yArray[1], zArray[0]));
         corners.add(new BlockPos(xArray[1], yArray[1], zArray[1]));
 
-        ArrayList<BlockPos> edges = new ArrayList<>();
-
         // 3. Now with all 8 corners, we check each corner.
         // Fail if that is not the case.
-        // 0, 0, 0: south up east
-        BlockState cornerState = level.getBlockState(corners.get(0));
-        if (!cornerState.getValue(QuarryFrameBlock.SOUTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.UP_CON)
-                || !cornerState.getValue(QuarryFrameBlock.EAST_CON))
-            return false;
-        // 0, 0, 1: north up east
-        cornerState = level.getBlockState(corners.get(1));
-        if (!cornerState.getValue(QuarryFrameBlock.NORTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.UP_CON)
-                || !cornerState.getValue(QuarryFrameBlock.EAST_CON))
-            return false;
-        // 0, 1, 0: south down east
-        cornerState = level.getBlockState(corners.get(2));
-        if (!cornerState.getValue(QuarryFrameBlock.SOUTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.DOWN_CON)
-                || !cornerState.getValue(QuarryFrameBlock.EAST_CON))
-            return false;
-        // 0, 1, 1: north down east
-        cornerState = level.getBlockState(corners.get(3));
-        if (!cornerState.getValue(QuarryFrameBlock.NORTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.DOWN_CON)
-                || !cornerState.getValue(QuarryFrameBlock.EAST_CON))
-            return false;
-        // 1, 0, 0: south up west
-        cornerState = level.getBlockState(corners.get(4));
-        if (!cornerState.getValue(QuarryFrameBlock.SOUTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.UP_CON)
-                || !cornerState.getValue(QuarryFrameBlock.WEST_CON))
-            return false;
-        // 1, 0, 1: north up west
-        cornerState = level.getBlockState(corners.get(5));
-        if (!cornerState.getValue(QuarryFrameBlock.NORTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.UP_CON)
-                || !cornerState.getValue(QuarryFrameBlock.WEST_CON))
-            return false;
-        // 1, 1, 0: south down west
-        cornerState = level.getBlockState(corners.get(6));
-        if (!cornerState.getValue(QuarryFrameBlock.SOUTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.DOWN_CON)
-                || !cornerState.getValue(QuarryFrameBlock.WEST_CON))
-            return false;
-        // 1, 1, 1: north down west
-        cornerState = level.getBlockState(corners.get(7));
-        if (!cornerState.getValue(QuarryFrameBlock.NORTH_CON)
-                || !cornerState.getValue(QuarryFrameBlock.DOWN_CON)
-                || !cornerState.getValue(QuarryFrameBlock.WEST_CON))
-            return false;
+        for (int i = 0; i < cornerConnections.size(); i++)
+        {
+            BlockState cornerState = level.getBlockState(corners.get(i));
+            Triple<BooleanProperty, BooleanProperty, BooleanProperty> properties = cornerConnections.get(i);
+            if (!cornerState.getValue(properties.getLeft())
+                    || !cornerState.getValue(properties.getMiddle())
+                    || !cornerState.getValue(properties.getRight()))
+                return new FormationResult(false, "Expected frame corner!", corners.get(0));
+        }
 
         // 4. We traverse the 12 edges of the prism
         // This assumes the corners have at least 1 edge in between.
-        // TODO: extract this into a function
-        // (0, 0, 0) -> (1, 0, 0)
-        for (BlockPos edge = corners.get(0b000).relative(Direction.EAST);
-             edge.getX() < corners.get(0b100).getX();
-             edge = edge.relative(Direction.EAST))
+        ArrayList<BlockPos> edges = new ArrayList<>();
+        for (Triple<Integer, Integer, Direction> directionTriple : edgeConnections)
         {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.EAST)
-                    || !connections.contains(Direction.WEST))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 0, 0) -> (0, 1, 0)
-        for (BlockPos edge = corners.get(0b000).relative(Direction.UP);
-             edge.getY() < corners.get(0b010).getY();
-             edge = edge.relative(Direction.UP))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.UP)
-                    || !connections.contains(Direction.DOWN))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 0, 0) -> (0, 0, 1)
-        for (BlockPos edge = corners.get(0b000).relative(Direction.SOUTH);
-             edge.getZ() < corners.get(0b001).getZ();
-             edge = edge.relative(Direction.SOUTH))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.SOUTH)
-                    || !connections.contains(Direction.NORTH))
-                return false;
-            edges.add(edge);
-        }
-
-        // (1, 0, 0) -> (1, 1, 0)
-        for (BlockPos edge = corners.get(0b100).relative(Direction.UP);
-             edge.getY() < corners.get(0b110).getY();
-             edge = edge.relative(Direction.UP))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.UP)
-                    || !connections.contains(Direction.DOWN))
-                return false;
-            edges.add(edge);
-        }
-
-        // (1, 0, 0) -> (1, 0, 1)
-        for (BlockPos edge = corners.get(0b100).relative(Direction.SOUTH);
-             edge.getZ() < corners.get(0b101).getZ();
-             edge = edge.relative(Direction.SOUTH))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.SOUTH)
-                    || !connections.contains(Direction.NORTH))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 1, 0) -> (1, 1, 0)
-        for (BlockPos edge = corners.get(0b010).relative(Direction.EAST);
-             edge.getX() < corners.get(0b110).getX();
-             edge = edge.relative(Direction.EAST))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.EAST)
-                    || !connections.contains(Direction.WEST))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 1, 0) -> (0, 1, 1)
-        for (BlockPos edge = corners.get(0b010).relative(Direction.SOUTH);
-             edge.getZ() < corners.get(0b011).getZ();
-             edge = edge.relative(Direction.SOUTH))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.SOUTH)
-                    || !connections.contains(Direction.NORTH))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 0, 1) -> (1, 0, 1)
-        for (BlockPos edge = corners.get(0b001).relative(Direction.EAST);
-             edge.getX() < corners.get(0b101).getX();
-             edge = edge.relative(Direction.EAST))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.EAST)
-                    || !connections.contains(Direction.WEST))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 0, 1) -> (0, 1, 1)
-        for (BlockPos edge = corners.get(0b001).relative(Direction.UP);
-             edge.getY() < corners.get(0b011).getY();
-             edge = edge.relative(Direction.UP))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.UP)
-                    || !connections.contains(Direction.DOWN))
-                return false;
-            edges.add(edge);
-        }
-
-        // (1, 1, 0) -> (1, 1, 1)
-        for (BlockPos edge = corners.get(0b110).relative(Direction.SOUTH);
-             edge.getZ() < corners.get(0b111).getZ();
-             edge = edge.relative(Direction.SOUTH))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.SOUTH)
-                    || !connections.contains(Direction.NORTH))
-                return false;
-            edges.add(edge);
-        }
-
-        // (1, 0, 1) -> (1, 1, 1)
-        for (BlockPos edge = corners.get(0b101).relative(Direction.UP);
-             edge.getY() < corners.get(0b111).getY();
-             edge = edge.relative(Direction.UP))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.UP)
-                    || !connections.contains(Direction.DOWN))
-                return false;
-            edges.add(edge);
-        }
-
-        // (0, 1, 1) -> (1, 1, 1)
-        for (BlockPos edge = corners.get(0b011).relative(Direction.EAST);
-             edge.getX() < corners.get(0b111).getX();
-             edge = edge.relative(Direction.EAST))
-        {
-            BlockState edgeState = level.getBlockState(edge);
-            List<Direction> connections = getConnections(edgeState);
-            if (connections.size() != 2
-                    || !connections.contains(Direction.EAST)
-                    || !connections.contains(Direction.WEST))
-                return false;
-            edges.add(edge);
+            for (BlockPos edge = corners.get(directionTriple.getLeft()).relative(directionTriple.getRight());
+                 !edge.equals(corners.get(directionTriple.getMiddle()));
+                 edge = edge.relative(directionTriple.getRight()))
+            {
+                BlockState edgeState = level.getBlockState(edge);
+                List<Direction> connections = getConnections(edgeState);
+                if (connections.size() != 2
+                        || !connections.contains(directionTriple.getRight())
+                        || !connections.contains(directionTriple.getRight().getOpposite()))
+                    return new FormationResult(false, "Expected frame edge!", edge);
+                edges.add(edge);
+            }
         }
 
         // Finally we now have a correct formation
@@ -404,9 +254,9 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
             cornerPositions.add(corners.get(0b000));
             cornerPositions.add(corners.get(0b111));
         }
-        //level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Block count: " + blocks.size())));
 
-        return true;
+        //level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Block count: " + blocks.size())));
+        return new FormationResult(true, null, null);
     }
 
     @Override
@@ -416,8 +266,8 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         // Otherwise, the formation is only checked when the player right clicks the machine
         if (state.getValue(StaticMultiBlockPart.FORMED))
         {
-            boolean formed = checkFormed(level, pos, null);
-            level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, formed));
+            FormationResult formed = checkFormed(level, pos, null);
+            level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, formed.success));
         }
     }
 
@@ -430,15 +280,22 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         if (!state.getValue(StaticMultiBlockPart.FORMED))
         {
             List<BlockPos> corners = new ArrayList<>();
-            boolean result = checkFormed(level, pos, corners);
-            if (result)
+            FormationResult formation = checkFormed(level, pos, corners);
+            Optional<QuarryControllerBlockEntity> beOptional = level.getBlockEntity(pos, ModBlockEntities.QUARRY_CONTROLLER_BE.get());
+            if (formation.success)
             {
-                Optional<QuarryControllerBlockEntity> beOptional = level.getBlockEntity(pos, ModBlockEntities.QUARRY_CONTROLLER_BE.get());
                 beOptional.ifPresent(be ->
                         be.setCornerOne(corners.get(0)).setCornerTwo(corners.get(1)).setCurrentY(corners.get(0).getY() - 1).resetPos());
             }
-            level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, result));
-            level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Formed: " + result)));
+
+            level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, formation.success));
+
+            if (!formation.success)
+            {
+                beOptional.ifPresent(be -> be.highlightBadBlock(formation.mistakePos));
+                ((ServerPlayer) player).sendSystemMessage(Component.literal(formation.mistakeText + " " + formation.mistakePos));
+            }
+            ((ServerPlayer) player).sendSystemMessage(Component.literal("Formed: " + formation.success));
         }
         else if (level.getBlockEntity(pos) instanceof QuarryControllerBlockEntity quarryBe)
         {
@@ -456,12 +313,45 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     }
 
     @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston)
+    {
+        Stream.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST).map(pos::relative)
+                .filter(neighbourPos -> level.getBlockState(neighbourPos).is(ModBlocks.QUARRY_FRAME))
+                .forEach(neighbourPos -> level.setBlockAndUpdate(neighbourPos, level.getBlockState(neighbourPos).setValue(StaticMultiBlockPart.FORMED, false)));
+    }
+
+    @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return null;
     }
 
     @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType)
+    {
+        return createTickerHelper(blockEntityType, blockEntityType,
+                (pLevel, pPos, pState, pBlockEntity) ->
+                {
+                    if (pBlockEntity instanceof BaseLeetBlockEntity baseLeetBlockEntity)
+                        baseLeetBlockEntity.tick(pLevel, pPos, pState);
+                });
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new QuarryControllerBlockEntity(ModBlockEntities.QUARRY_CONTROLLER_BE.get(), blockPos, blockState);
+    }
+
+    private class FormationResult
+    {
+        public boolean success;
+        public String mistakeText;
+        public BlockPos mistakePos;
+
+        public FormationResult(boolean success, String mistakeText, BlockPos mistakePos)
+        {
+            this.success = success;
+            this.mistakeText = mistakeText;
+            this.mistakePos = mistakePos;
+        }
     }
 }

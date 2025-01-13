@@ -25,7 +25,7 @@ public abstract class HorizontalLeetEntityBlock extends BaseLeetEntityBlock
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        return getStateDefinition().any().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override

@@ -147,11 +147,57 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         return start + t * (end - start);
     }
 
+    public static void drawCube(VertexConsumer consumer, PoseStack poseStack) {
+        float size = 0.6f;
+
+        float[][] vertices = {
+                {-size, -size, -size}, // 0: Bottom-left-back
+                { size, -size, -size}, // 1: Bottom-right-back
+                { size, -size,  size}, // 2: Bottom-right-front
+                {-size, -size,  size}, // 3: Bottom-left-front
+                {-size,  size, -size}, // 4: Top-left-back
+                { size,  size, -size}, // 5: Top-right-back
+                { size,  size,  size}, // 6: Top-right-front
+                {-size,  size,  size}  // 7: Top-left-front
+        };
+
+        int[][] faces = {
+                {0, 1, 2, 3}, // Bottom face
+                {4, 5, 6, 7}, // Top face
+                {3, 2, 6, 7}, // North face
+                {0, 1, 5, 4}, // South face
+                {1, 2, 6, 5}, // East face
+                {0, 3, 7, 4}  // West face
+        };
+
+        for (int[] face : faces)
+        {
+            for (int vertexIndex : face)
+            {
+                float[] vertex = vertices[vertexIndex];
+                consumer.addVertex(poseStack.last().pose(), vertex[0], vertex[1], vertex[2]).setColor(128, 0, 0, 50);
+            }
+        }
+    }
+
     // TODO: Get ALL of these quads pre-loaded in constructor
     //       Probably even static.
     @Override
     public void render(QuarryControllerBlockEntity quarryBe, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay)
     {
+        int highlight = quarryBe.getBadBlockDuration();
+        if (highlight > 0)
+        {
+            VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.DEBUG_QUADS);
+            poseStack.pushPose();
+            poseStack.translate(0.5, 0.5, 0.5);
+            poseStack.translate(Vec3.atLowerCornerOf(quarryBe.getBadBlock().subtract(quarryBe.getBlockPos())));
+
+            drawCube(consumer, poseStack);
+
+            poseStack.popPose();
+        }
+
         if (!quarryBe.getBlockState().getValue(StaticMultiBlockPart.FORMED)
             || quarryBe.getLevel() == null)
             return;
@@ -166,9 +212,6 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         float fakeFrameX = lerp(nextBlock.getX(), targetBlock.getX(), t) - quarryPos.getX();
         float fakeFrameY = endCorner.getY() - quarryPos.getY();
         float fakeFrameZ = lerp(nextBlock.getZ(), targetBlock.getZ(), t) - quarryPos.getZ();
-
-        // Get quad renderer
-        VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.SOLID);
 
         //
         // Render fake frame along z

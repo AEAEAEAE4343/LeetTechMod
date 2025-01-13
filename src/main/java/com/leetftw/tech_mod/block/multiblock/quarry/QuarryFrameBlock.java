@@ -50,8 +50,6 @@ public class QuarryFrameBlock extends StaticMultiBlockPart
                 .setValue(DOWN_CON, false));
     }
 
-    // TODO: Maybe pre-generate these?
-    // Would add memory usage but increase performance
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context)
     {

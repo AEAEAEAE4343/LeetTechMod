@@ -71,6 +71,10 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
     private int nextBlockRelX = 0;
     private int nextBlockRelZ = 0;
 
+    private boolean includeBlockHighlightInUpdate = false;
+    private BlockPos badBlockPosition = BlockPos.ZERO;
+    private int badBlockHighlightDuration = 0;
+
     // Client only, used for animations;
     private long lastSync = 0;
 
@@ -80,6 +84,12 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
     public QuarryControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
         super(type, pos, blockState);
+    }
+
+    public int getProcessingTime()
+    {
+        // TODO: implement upgrade system for all machines
+        return BASE_PROCESSING_TIME;
     }
 
     // TODO: remove
@@ -161,6 +171,28 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
         setChangedAndUpdate();
     }
 
+    public void highlightBadBlock(BlockPos pos)
+    {
+        if (!(level instanceof ServerLevel serverLevel))
+        {
+            throw new IllegalArgumentException("Level must be a ServerLevel");
+        }
+
+        badBlockPosition = pos;
+        includeBlockHighlightInUpdate = true;
+        setChangedAndUpdate();
+    }
+
+    public int getBadBlockDuration()
+    {
+        return badBlockHighlightDuration;
+    }
+
+    public BlockPos getBadBlock()
+    {
+        return badBlockPosition;
+    }
+
     public static List<ItemStack> getBlockDrops(BlockState blockState, BlockPos pos, Level level)
     {
         if (!(level instanceof ServerLevel serverLevel)) {
@@ -216,11 +248,19 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 
     private void calculateMoveProgress()
     {
-        double movementSpeed = 0.2; // Meters / Tick
+        double movementSpeed = 1 / (getProcessingTime() / 4.0); // Meters / Tick
         double distance = Math.sqrt(
                 Math.pow(nextBlockRelX - currentBlockRelX, 2) +
                         Math.pow(nextBlockRelZ - currentBlockRelZ, 2)
         );
+
+        if (distance == 0)
+        {
+            advancePosition();
+            currentState = State.Idling;
+            return;
+        }
+
         progress = (int) Math.ceil(distance / movementSpeed);
         movementTicks = progress;
 
@@ -232,6 +272,8 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
     public void tick(Level pLevel, BlockPos pPos, BlockState pState)
     {
         super.tick(pLevel, pPos, pState);
+
+        if (badBlockHighlightDuration > 0) badBlockHighlightDuration--;
         if (level instanceof ClientLevel || currentState == State.Halted) return;
 
         if (!pState.getValue(StaticMultiBlockPart.FORMED)) {
@@ -318,14 +360,14 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
             // Empty block, go into idling state
             DebugHelper.chatOutput("Mining air: " + getTargetPosition());
             currentState = State.MiningEmpty;
-            progress = 5;
+            progress = getProcessingTime() / 5;
             return;
         }
 
         // Real block, go into mining state
         DebugHelper.chatOutput("Mining block: " + getTargetPosition());
         currentState = State.MiningBlock;
-        progress = 20;
+        progress = getProcessingTime();
 
         // TODO: Don't forget to consume power and Liquid Aesthetic
     }
@@ -408,7 +450,15 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
         pTag.putInt("quarry_progress", progress);
         pTag.putString("quarry_state", currentState.name());
 
-        if (update) pTag.putLong("quarry_sync", level.getGameTime());
+        if (update)
+        {
+            pTag.putLong("quarry_sync", level.getGameTime());
+            if (includeBlockHighlightInUpdate)
+            {
+                pTag.putLong("quarry_badblock_pos", badBlockPosition.asLong());
+                includeBlockHighlightInUpdate = false;
+            }
+        }
         if (save) ItemHelper.saveItemsToTag(pTag, registries, "quarry_output_buffer", currentItems.stream());
     }
 
@@ -459,6 +509,12 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
                 CompoundTag itemTags = itemList.getCompound(i);
                 ItemStack.parse(registries, itemTags).ifPresent((stack) -> currentItems.add(stack));
             }
+        }
+
+        if (pTag.contains("quarry_badblock_pos"))
+        {
+            badBlockPosition = BlockPos.of(pTag.getLong("quarry_badblock_pos"));
+            badBlockHighlightDuration = 100;
         }
     }
 
