@@ -2,6 +2,7 @@ package com.leetftw.tech_mod.block.entity;
 
 import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.util.ForgeEnergyHelper;
+import com.leetftw.tech_mod.util.ItemHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
@@ -890,16 +891,7 @@ public abstract class BaseLeetBlockEntity extends BlockEntity implements MenuPro
 
     private void serializeNBT(HolderLookup.Provider provider, CompoundTag pTag)
     {
-        ListTag itemList = new ListTag();
-        for (int i = 0; i < ITEMS_INVENTORY.size(); ++i)
-        {
-            if (!ITEMS_INVENTORY.get(i).isEmpty())
-            {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putInt("Slot", i);
-                itemList.add(this.ITEMS_INVENTORY.get(i).save(provider, itemTag));
-            }
-        }
+        ItemHelper.saveItemsToTag(pTag, provider, "base_leet_be.items", ITEMS_INVENTORY.stream());
 
         ListTag fluidList = new ListTag();
         for (int i = 0; i < FLUID_INVENTORY.size(); ++i)
@@ -912,7 +904,6 @@ public abstract class BaseLeetBlockEntity extends BlockEntity implements MenuPro
             }
         }
 
-        pTag.put("base_leet_be.items", itemList);
         pTag.put("base_leet_be.fluids", fluidList);
         pTag.putInt("base_leet_be.energy", energyGetStored());
     }

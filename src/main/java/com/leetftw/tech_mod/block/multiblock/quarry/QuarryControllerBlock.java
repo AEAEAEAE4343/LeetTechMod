@@ -4,6 +4,7 @@ import com.leetftw.tech_mod.block.BaseLeetEntityBlock;
 import com.leetftw.tech_mod.block.HorizontalLeetEntityBlock;
 import com.leetftw.tech_mod.block.entity.ModBlockEntities;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
+import com.leetftw.tech_mod.util.DebugHelper;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -424,8 +425,9 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult)
     {
         InteractionResult returnVal = super.useWithoutItem(state, level, pos, player, hitResult);
+        if (level.isClientSide) return returnVal;
 
-        if (!level.isClientSide && !state.getValue(StaticMultiBlockPart.FORMED))
+        if (!state.getValue(StaticMultiBlockPart.FORMED))
         {
             List<BlockPos> corners = new ArrayList<>();
             boolean result = checkFormed(level, pos, corners);
@@ -437,6 +439,10 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
             }
             level.setBlockAndUpdate(pos, state.setValue(StaticMultiBlockPart.FORMED, result));
             level.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.sendSystemMessage(Component.literal("Formed: " + result)));
+        }
+        else if (level.getBlockEntity(pos) instanceof QuarryControllerBlockEntity quarryBe)
+        {
+            DebugHelper.chatOutput("State: " + quarryBe.getState());
         }
 
         return returnVal;

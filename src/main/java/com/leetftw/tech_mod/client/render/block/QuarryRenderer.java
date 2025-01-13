@@ -134,6 +134,11 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         }
     }
 
+    private float lerp(float start, float end, float t)
+    {
+        return start + t * (end - start);
+    }
+
     // TODO: Get ALL of these quads pre-loaded in constructor
     //       Probably even static.
     @Override
@@ -150,12 +155,14 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         BlockPos startCorner = quarryBe.getCornerOne();
         BlockPos endCorner = quarryBe.getCornerTwo();
         BlockPos targetBlock = quarryBe.getTargetPosition();
+        BlockPos nextBlock = quarryBe.getNextPosition();
 
-        int fakeFrameX = targetBlock.getX() - quarryPos.getX();
-        int fakeFrameY = endCorner.getY() - quarryPos.getY();
-        int fakeFrameZ = targetBlock.getZ() - quarryPos.getZ();
+        float t = quarryBe.isMoving() ? (quarryBe.getProgress() - partialTick) / quarryBe.getMovementTicks() : 1;
+        float fakeFrameX = lerp(nextBlock.getX(), targetBlock.getX(), t) - quarryPos.getX();
+        float fakeFrameY = endCorner.getY() - quarryPos.getY();
+        float fakeFrameZ = lerp(nextBlock.getZ(), targetBlock.getZ(), t) - quarryPos.getZ();
 
-        // Get quad rendererr
+        // Get quad renderer
         VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.SOLID);
 
         BakedModel frameXModel = modelManager.getModel(new ModelResourceLocation(baseModel, "down=true,east=true,formed=false,north=true,south=true,up=true,west=true"));
