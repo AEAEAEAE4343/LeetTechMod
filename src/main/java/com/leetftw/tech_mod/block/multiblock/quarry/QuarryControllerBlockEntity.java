@@ -54,8 +54,9 @@ import java.util.*;
 
 public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 {
-    private final int BASE_ENERGY_USAGE = 2048;
-    private final int BASE_PROCESSING_TIME = 20;
+    private final static int BASE_ENERGY_USAGE = 2048;
+    private final static int BASE_PROCESSING_TIME = 20;
+    private final static ItemStack HARVEST_TOOL = new ItemStack(Items.DIAMOND_PICKAXE, 1);
 
     private BlockPos cornerOne = BlockPos.ZERO;
     private BlockPos cornerTwo = BlockPos.ZERO;
@@ -173,7 +174,7 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 
         // TODO: Silk touch upgrade :)
         // Add silk touch?
-        ItemStack tool = new ItemStack(Items.DIAMOND_PICKAXE, 1);
+        ItemStack tool = HARVEST_TOOL; //.copy();
         //tool.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
         lootParamsBuilder.withParameter(LootContextParams.TOOL, tool);
 
@@ -258,8 +259,11 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
                 decreaseProgress();
                 if (progress != 0) break;
 
-                currentItems = getBlockDrops(targetBlock, pPos, level);
-                level.setBlockAndUpdate(targetPos, Blocks.AIR.defaultBlockState());
+                if (HARVEST_TOOL.isCorrectToolForDrops(targetBlock)) {
+                    currentItems = getBlockDrops(targetBlock, pPos, level);
+                    level.setBlockAndUpdate(targetPos, Blocks.AIR.defaultBlockState());
+                }
+                else currentItems = List.of();
 
                 if (currentItems.isEmpty())
                 {
