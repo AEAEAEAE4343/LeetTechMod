@@ -2,6 +2,8 @@ package com.leetftw.tech_mod.item;
 
 import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.fluid.ModFluids;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgradeItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -30,6 +32,9 @@ public class ModItems
     public static final DeferredItem<BucketItem> LIQUID_AESTHETIC_BUCKET = registerItemSimpleModel("liquid_aesthetic_bucket",
             properties -> new BucketItem(ModFluids.LIQUID_AESTHETIC.get(), properties),
             new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
+
+    public static final DeferredItem<MachineUpgradeItem> MACHINE_UPGRADE = registerItemSimpleModel("machine_upgrade",
+            properties -> new MachineUpgradeItem(properties.component(ModDataComponents.MACHINE_UPGRADE, MachineUpgrade.BLANK.getUpgradeId())));
 
     public static DeferredItem<Item> registerSimpleItemSimpleModel(String id, Item.Properties properties)
     {

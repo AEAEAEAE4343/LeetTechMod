@@ -2,15 +2,17 @@ package com.leetftw.tech_mod;
 
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.entity.ModBlockEntities;
-import com.leetftw.tech_mod.block.entity.codec.BaseLeetBlockEntityCodecs;
 import com.leetftw.tech_mod.fluid.ModFluids;
 import com.leetftw.tech_mod.item.ModCreativeTabs;
+import com.leetftw.tech_mod.item.ModDataComponents;
 import com.leetftw.tech_mod.item.ModItems;
 import com.leetftw.tech_mod.client.gui.CrystallizerScreen;
 import com.leetftw.tech_mod.client.gui.GemRefineryScreen;
 import com.leetftw.tech_mod.gui.ModMenuTypes;
+import com.leetftw.tech_mod.client.render.model.MachineUpgradeItemModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -62,7 +64,7 @@ public class LeetTechMod
         ModCreativeTabs.register(modEventBus);
 
         // Register block entity components
-        BaseLeetBlockEntityCodecs.REGISTRAR.register(modEventBus);
+        ModDataComponents.REGISTRAR.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -106,6 +108,16 @@ public class LeetTechMod
     @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
+        @SubscribeEvent
+        public static void registerItemModels(RegisterItemModelsEvent event) {
+            event.register(
+                    // The name to reference as the type
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "machine_upgrade_model"),
+                    // The map codec
+                    MachineUpgradeItemModel.Unbaked.MAP_CODEC
+            );
+        }
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {

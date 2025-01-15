@@ -2,7 +2,7 @@ package com.leetftw.tech_mod.client.render.block;
 
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingControllerBlockEntity;
-import com.leetftw.tech_mod.client.render.block.model.EnergyRingUnbakedModel;
+import com.leetftw.tech_mod.client.render.model.EnergyRingUnbakedModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;

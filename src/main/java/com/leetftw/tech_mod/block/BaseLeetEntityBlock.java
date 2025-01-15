@@ -22,7 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.leetftw.tech_mod.block.entity.codec.BaseLeetBlockEntityCodecs.*;
+import static com.leetftw.tech_mod.item.ModDataComponents.ENERGY_CAPACITY;
+import static com.leetftw.tech_mod.item.ModDataComponents.ENERGY_STORED;
 
 public abstract class BaseLeetEntityBlock extends BaseEntityBlock
 {

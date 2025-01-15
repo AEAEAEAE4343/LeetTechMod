@@ -39,7 +39,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 
-import static com.leetftw.tech_mod.block.entity.codec.BaseLeetBlockEntityCodecs.*;
+import static com.leetftw.tech_mod.item.ModDataComponents.ENERGY_CAPACITY;
+import static com.leetftw.tech_mod.item.ModDataComponents.ENERGY_STORED;
 import static java.lang.Math.min;
 
 /*

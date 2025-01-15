@@ -1,7 +1,6 @@
 package com.leetftw.tech_mod.block;
 
 import com.leetftw.tech_mod.LeetTechMod;
-import com.leetftw.tech_mod.block.entity.codec.BaseLeetBlockEntityCodecs;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingControllerBlock;
 import com.leetftw.tech_mod.block.multiblock.energy_ring.EnergyRingIOBlock;
@@ -27,6 +26,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
 
+import static com.leetftw.tech_mod.item.ModDataComponents.ENERGY_CAPACITY;
+import static com.leetftw.tech_mod.item.ModDataComponents.ENERGY_STORED;
+
 public class ModBlocks
 {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(LeetTechMod.MOD_ID);
@@ -34,8 +36,8 @@ public class ModBlocks
     private static Item.Properties createBEProperties(int stored, int capacity)
     {
         return new Item.Properties()
-                .component(BaseLeetBlockEntityCodecs.ENERGY_STORED.get(), stored)
-                .component(BaseLeetBlockEntityCodecs.ENERGY_CAPACITY.get(), capacity)
+                .component(ENERGY_STORED.get(), stored)
+                .component(ENERGY_CAPACITY.get(), capacity)
                 .useBlockDescriptionPrefix();
     }
     private static Item.Properties createBEProperties(int capacity)

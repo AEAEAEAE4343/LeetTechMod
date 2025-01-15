@@ -2,21 +2,14 @@ package com.leetftw.tech_mod.block.multiblock.quarry;
 
 import com.leetftw.tech_mod.block.entity.BaseLeetBlockEntity;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
-import com.leetftw.tech_mod.item.MachineUpgradeItem;
 import com.leetftw.tech_mod.util.DebugHelper;
 import com.leetftw.tech_mod.util.ItemHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -27,36 +20,29 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.plaf.basic.BasicComboBoxUI;
 import java.util.*;
 
 public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 {
     private final static int BASE_ENERGY_USAGE = 2048;
     private final static int BASE_PROCESSING_TIME = 20;
-    private final static ItemStack HARVEST_TOOL = new ItemStack(Items.DIAMOND_PICKAXE, 1);
+    private final static ItemStack HARVEST_TOOL = new ItemStack(Items.NETHERITE_PICKAXE, 1);
+
+    private static final int UPGRADE_SLOTS = 4;
+
 
     private BlockPos cornerOne = BlockPos.ZERO;
     private BlockPos cornerTwo = BlockPos.ZERO;
@@ -204,10 +190,11 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                 .withParameter(LootContextParams.BLOCK_STATE, blockState);
 
-        // TODO: Silk touch upgrade :)
-        // Add silk touch?
+        // TODO: Quarry upgrades
+        //       Perhaps allow for an enchantment book to be used for stuff like Silk Touch and Fortune?
         ItemStack tool = HARVEST_TOOL; //.copy();
         //tool.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
+        //tool.enchant(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE), 3);
         lootParamsBuilder.withParameter(LootContextParams.TOOL, tool);
 
         // Get the drops

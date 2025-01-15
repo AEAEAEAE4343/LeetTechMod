@@ -1,4 +1,4 @@
-package com.leetftw.tech_mod.client.render.block.model;
+package com.leetftw.tech_mod.client.render.model;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;

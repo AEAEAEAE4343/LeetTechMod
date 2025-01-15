@@ -1,4 +1,4 @@
-package com.leetftw.tech_mod.client.render.block.model;
+package com.leetftw.tech_mod.client.render.model;
 
 import com.leetftw.tech_mod.LeetTechMod;
 import com.mojang.blaze3d.vertex.PoseStack;

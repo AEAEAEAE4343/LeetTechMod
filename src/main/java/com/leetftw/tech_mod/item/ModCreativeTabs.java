@@ -1,6 +1,7 @@
 package com.leetftw.tech_mod.item;
 
 import com.leetftw.tech_mod.LeetTechMod;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,8 +29,12 @@ public class ModCreativeTabs
                 for (DeferredHolder<Item, ? extends Item> item : ModItems.ITEMS.getEntries())
                     output.accept(item.get());
 
-                /*for (DeferredHolder<Block, ? extends Block> block : ModBlocks.BLOCKS.getEntries())
-                    output.accept(block.get().asItem());*/
+                for (MachineUpgrade upgrade : MachineUpgrade.getRegisteredUpgrades(params.holders()))
+                {
+                    ItemStack stack = new ItemStack(ModItems.MACHINE_UPGRADE.get());
+                    stack.set(ModDataComponents.MACHINE_UPGRADE, upgrade.getUpgradeId());
+                    output.accept(stack);
+                }
             })
             .build()
     );

@@ -1,11 +1,11 @@
 package com.leetftw.tech_mod.block.entity;
 
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import com.leetftw.tech_mod.item.ModItems;
 import com.leetftw.tech_mod.gui.GemRefineryMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class GemRefineryBlockEntity extends BaseLeetBlockEntity
+public class GemRefineryBlockEntity extends UpgradeableLeetBlockEntity
 {
     private static final int INVENTORY_SIZE = 3;
     private static final int INPUT_DIAMOND_SLOT = 0;
@@ -29,7 +29,7 @@ public class GemRefineryBlockEntity extends BaseLeetBlockEntity
 
     protected final SimpleContainerData data;
     private int progress = 0;
-    private int maxProgress = 120;
+    private static final int PROCESSING_TIME = 120;
 
     public GemRefineryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
@@ -43,7 +43,7 @@ public class GemRefineryBlockEntity extends BaseLeetBlockEntity
                 return switch (pIndex)
                 {
                     case 0 -> progress;
-                    case 1 -> maxProgress;
+                    case 1 -> getProcessingTime();
                     default -> 0;
                 };
             }
@@ -51,13 +51,23 @@ public class GemRefineryBlockEntity extends BaseLeetBlockEntity
             @Override
             public void set(int pIndex, int pValue)
             {
-                switch (pIndex)
+                if (pIndex == 0)
                 {
-                    case 0 -> progress = pValue;
-                    case 1 -> maxProgress = pValue;
+                    progress = pValue;
                 }
             }
         };
+    }
+
+    @Override
+    public int upgradesGetSlotCount() {
+        return 1;
+    }
+
+    @Override
+    public boolean upgradesAllowUpgrade(MachineUpgrade upgradeItem)
+    {
+        return true;
     }
 
     @Override
@@ -139,7 +149,7 @@ public class GemRefineryBlockEntity extends BaseLeetBlockEntity
             setProgress(progress + 1);
             setChanged(level, pos, state);
 
-            if (progress >= maxProgress) {
+            if (progress >= getProcessingTime()) {
                 craftItem();
                 setProgress(0);
             }
@@ -172,6 +182,11 @@ public class GemRefineryBlockEntity extends BaseLeetBlockEntity
 
         /*if (progress == 0) setItem(8, ItemStack.EMPTY);
         else setItem(8, new ItemStack(Items.DIRT, progress / 2));*/
+    }
+
+    private int getProcessingTime()
+    {
+        return (int)Math.ceil(PROCESSING_TIME * getSpeedMultiplier());
     }
 
     // BlockEntity
