@@ -61,7 +61,7 @@ public class GemRefineryBlockEntity extends UpgradeableLeetBlockEntity
 
     @Override
     public int upgradesGetSlotCount() {
-        return 1;
+        return 4;
     }
 
     @Override

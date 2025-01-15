@@ -1,8 +1,15 @@
 {
+  "item.leet_tech.tiny_aesthetic_dust_pile": "Tiny Pile of Aesthetic Dust",
   "item.leet_tech.aesthetic_dust": "Aesthetic Dust",
   "item.leet_tech.aesthetic_crystal": "Aesthetic Crystal",
   "item.leet_tech.aesthetic_hammer": "Aesthetic Hammer",
   "item.leet_tech.liquid_aesthetic_bucket": "Bucket of Liquid Aesthetic",
+
+  "item.leet_tech.leet_tech_machine_upgrade.blank": "Machine Upgrade Base",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_1": "Machine Speed Upgrade (Tier 1)",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_2": "Machine Speed Upgrade (Tier 2)",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_3": "Machine Speed Upgrade (Tier 3)",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_4": "Machine Speed Upgrade (Tier 4)",
 
   "block.leet_tech.aesthetic_block": "Aesthetic Block",
 
@@ -23,6 +30,9 @@
   "block.leet_tech.energy_ring_casing": "Energy Ring Casing",
   "block.leet_tech.energy_ring_input_port": "Energy Ring Input Port",
   "block.leet_tech.energy_ring_output_port": "Energy Ring Output Port",
+
+  "block.leet_tech.quarry_frame": "Quarry Frame",
+  "block.leet_tech.quarry_controller": "Quarry Controller",
 
   "tooltip.leet_tech.block_entity_energy_tooltip": "Energy: ",
 

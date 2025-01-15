@@ -3,6 +3,7 @@ package com.leetftw.tech_mod.client.render.model;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.leetftw.tech_mod.item.ModDataComponents;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import com.mojang.math.Transformation;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -37,11 +38,9 @@ public class MachineUpgradeItemModel implements ItemModel
         this.modelMap = models;
     }
 
-    // TODO: Use ItemModelGenerator
-    //       Cache baked models
     private BakedModel getOverlayModel(ItemStack stack)
     {
-        return modelMap.getOrDefault(stack.get(ModDataComponents.MACHINE_UPGRADE).toString(), modelMap.get("leet_tech:base"));
+        return modelMap.getOrDefault(stack.get(ModDataComponents.MACHINE_UPGRADE).toString(), modelMap.get(MachineUpgrade.BLANK_KEY.toString()));
     }
 
     @Override

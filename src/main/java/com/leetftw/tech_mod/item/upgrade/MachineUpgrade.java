@@ -84,6 +84,7 @@ public class MachineUpgrade
 
     public static MachineUpgrade fromId(RegistryAccess access, ResourceLocation id)
     {
+        if (id.equals(BLANK_KEY)) return BLANK;
         return access.lookupOrThrow(MACHINE_UPGRADE_REGISTRY_KEY).getOrThrow(ResourceKey.create(MACHINE_UPGRADE_REGISTRY_KEY, id)).value();
     }
 

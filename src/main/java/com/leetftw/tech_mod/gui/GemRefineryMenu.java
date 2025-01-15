@@ -32,6 +32,11 @@ public class GemRefineryMenu extends BaseLeetMenu
         addSlot(blockEntity.getInventorySlot(1, 56, 53, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING, BaseLeetBlockEntity.FilterType.ALWAYS_ALLOW));
         addSlot(blockEntity.getInventorySlot(2, 116, 35, BaseLeetBlockEntity.FilterType.ALWAYS_DENY, BaseLeetBlockEntity.FilterType.ALWAYS_ALLOW));
 
+        addSlot(blockEntity.getUpgradeSlot(0, 176 + 5, 8, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING));
+        addSlot(blockEntity.getUpgradeSlot(1, 176 + 23, 8, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING));
+        addSlot(blockEntity.getUpgradeSlot(2, 176 + 5, 26, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING));
+        addSlot(blockEntity.getUpgradeSlot(3, 176 + 23, 26, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING, BaseLeetBlockEntity.FilterType.RESPECT_EXISTING));
+
         addDataSlots(data);
     }
 

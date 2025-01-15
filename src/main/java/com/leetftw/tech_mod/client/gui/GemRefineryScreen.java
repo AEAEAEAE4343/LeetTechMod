@@ -16,6 +16,9 @@ public class GemRefineryScreen extends AbstractContainerScreen<GemRefineryMenu>
     private static final ResourceLocation PROGRESS_SPRITE =
             ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/sprites/container/gem_refinery/progress.png");
 
+    private static final ResourceLocation UPGRADE_OVERLAY =
+            ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/sprites/container/common/upgrade_overlay.png");
+
     private static final int PROGRESS_WIDTH = 40;
     private static final int PROGRESS_HEIGHT = 16;
 
@@ -42,6 +45,14 @@ public class GemRefineryScreen extends AbstractContainerScreen<GemRefineryMenu>
                 0, 0,
                 imageWidth, imageHeight,
                 256, 256);
+
+        // draw upgrade overlay
+        guiGraphics.blit(RenderType::guiTextured,
+                UPGRADE_OVERLAY,
+                leftPos + imageWidth, topPos,
+                0, 0,
+                47, 50,
+                47, 50);
 
         if (menu.isCrafting())
         {
