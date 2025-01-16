@@ -1,11 +1,14 @@
 package com.leetftw.tech_mod.block.entity;
 
 import com.leetftw.tech_mod.block.EnergyStorageBlock;
+import com.leetftw.tech_mod.util.ForgeEnergyHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -25,6 +28,15 @@ public class EnergyStorageBlockEntity extends BaseLeetBlockEntity
         this.transfer = transfer;
         creative = capacity == Integer.MAX_VALUE;
         energySetStored(creative ? Integer.MAX_VALUE : 0);
+    }
+
+    @Override
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState)
+    {
+        if (!pLevel.isClientSide() && energyAllowExtract())
+        {
+            ForgeEnergyHelper.pushPower(this, pLevel.getBlockState(pPos.relative(Direction.UP)).getBlock() instanceof EnergyStorageBlock);
+        }
     }
 
     private void setBlockFillState()
