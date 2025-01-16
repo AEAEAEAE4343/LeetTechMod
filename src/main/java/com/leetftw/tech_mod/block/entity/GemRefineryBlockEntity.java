@@ -67,7 +67,7 @@ public class GemRefineryBlockEntity extends UpgradeableLeetBlockEntity
     @Override
     public boolean upgradesAllowUpgrade(MachineUpgrade upgradeItem)
     {
-        return true;
+        return false;
     }
 
     @Override

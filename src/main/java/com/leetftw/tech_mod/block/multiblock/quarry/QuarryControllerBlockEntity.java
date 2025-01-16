@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
@@ -288,7 +289,18 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
                 decreaseProgress();
                 if (progress != 0) break;
 
-                if (HARVEST_TOOL.isCorrectToolForDrops(targetBlock)) {
+
+                // TODO: Upgrade that allows the quarry to place dirt to fill in water?
+                FluidState fluidState = targetBlock.getFluidState();
+                if (!fluidState.isEmpty())
+                {
+                    level.setBlockAndUpdate(targetPos, Blocks.AIR.defaultBlockState());
+                    currentItems = List.of();
+                }
+                else if ((!targetBlock.requiresCorrectToolForDrops() // Doesn't need correct tool
+                        || HARVEST_TOOL.isCorrectToolForDrops(targetBlock)) // Correct tool
+                        && targetBlock.getDestroySpeed(level, targetPos) >= 0) // Not unbreakable
+                {
                     currentItems = getBlockDrops(targetBlock, pPos, level);
                     level.setBlockAndUpdate(targetPos, Blocks.AIR.defaultBlockState());
                 }

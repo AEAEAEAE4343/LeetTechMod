@@ -35,6 +35,7 @@
   "block.leet_tech.quarry_controller": "Quarry Controller",
 
   "tooltip.leet_tech.block_entity_energy_tooltip": "Energy: ",
+  "gui.leet_tech.block_entity_upgrade_section": "Upgrades",
 
   "itemGroup.leet_tech.items": "LeetTech",
   "fluid_type.leet_tech.liquid_aesthetic": "Liquid Aesthetic",

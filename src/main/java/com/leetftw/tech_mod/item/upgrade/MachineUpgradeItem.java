@@ -32,4 +32,10 @@ public class MachineUpgradeItem extends Item
 
         tooltipComponents.add(Component.literal("ID: " + stack.get(ModDataComponents.MACHINE_UPGRADE).toString()));
     }
+
+    @Override
+    public int getMaxStackSize(ItemStack stack)
+    {
+        return stack.get(ModDataComponents.MACHINE_UPGRADE).equals(MachineUpgrade.BLANK_KEY) ? 16 : 1;
+    }
 }

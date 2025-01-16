@@ -2,6 +2,7 @@ package com.leetftw.tech_mod.datagen;
 
 import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.ModBlocks;
+import com.leetftw.tech_mod.client.render.model.MachineUpgradeItemModel;
 import com.leetftw.tech_mod.item.ModItems;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
@@ -12,13 +13,16 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplate;
 import net.neoforged.neoforge.client.model.generators.template.ExtendedModelTemplateBuilder;
-import net.neoforged.neoforge.client.model.generators.template.TransformVecBuilder;
-import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 
 public class ModItemModelGenerator extends ItemModelGenerators
 {
+    public static final List<DeferredHolder<Item, ? extends Item>> CUSTOM_ITEM_MODELS
+            = List.of(ModItems.MACHINE_UPGRADE);
+
     public ModItemModelGenerator(ItemModelOutput itemModelOutput, BiConsumer<ResourceLocation, ModelInstance> modelOutput)
     {
         super(itemModelOutput, modelOutput);
@@ -56,8 +60,12 @@ public class ModItemModelGenerator extends ItemModelGenerators
     @Override
     public void run()
     {
-        for (DeferredItem<Item> item : ModItems.SIMPLE_MODEL_ITEMS)
-            generateFlatItem(item.get(), ModelTemplates.FLAT_ITEM);
+        for (DeferredHolder<Item, ? extends Item> item : ModItems.ITEMS.getEntries())
+            if (!CUSTOM_ITEM_MODELS.contains(item))
+                generateFlatItem(item.get(), ModelTemplates.FLAT_ITEM);
+
+
+        this.itemModelOutput.accept(ModItems.MACHINE_UPGRADE.get(), new MachineUpgradeItemModel.Unbaked());
 
         generateAestheticBudModel();
         generateAestheticCluster(ModBlocks.AESTHETIC_CLUSTER.get());
