@@ -3,8 +3,11 @@ package com.leetftw.tech_mod.block.entity;
 import com.leetftw.tech_mod.item.ModDataComponents;
 import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import com.leetftw.tech_mod.item.upgrade.MachineUpgradeItem;
+import com.leetftw.tech_mod.util.ItemHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
 
 public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
 {
@@ -146,6 +151,21 @@ public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
     protected boolean hasUpgradeType(MachineUpgrade type)
     {
         return UPGRADES_INVENTORY.stream().anyMatch(itemStack -> itemStack.get(ModDataComponents.MACHINE_UPGRADE).equals(type));
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries)
+    {
+        super.saveAdditional(pTag, registries);
+        ItemHelper.saveItemsToTag(pTag, registries, "upgradeable_leet_be.upgrades", UPGRADES_INVENTORY.stream());
+    }
+
+    @Override
+    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries)
+    {
+        super.loadAdditional(pTag, registries);
+        if (pTag.contains("upgradeable_leet_be.upgrades"))
+            Collections.copy(UPGRADES_INVENTORY, ItemHelper.loadItemsFromTag(pTag, registries, "upgradeable_leet_be.upgrades", upgradesGetSlotCount()));
     }
 
     /// Returns the amount of upgrade slots the machine has.
