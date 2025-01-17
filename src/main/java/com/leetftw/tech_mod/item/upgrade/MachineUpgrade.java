@@ -25,23 +25,26 @@ public class MachineUpgrade
             ResourceLocation.CODEC.fieldOf("id").forGetter(MachineUpgrade::getUpgradeId),
             Codec.FLOAT.fieldOf("speed_multiplier").forGetter(MachineUpgrade::getSpeedMultiplier),
             Codec.FLOAT.fieldOf("efficiency_multiplier").forGetter(MachineUpgrade::getEfficiencyMultiplier),
-            Codec.BOOL.fieldOf("machine_specific").forGetter(MachineUpgrade::isMachineSpecific)
+            Codec.BOOL.fieldOf("machine_specific").forGetter(MachineUpgrade::isMachineSpecific),
+            Codec.BOOL.fieldOf("has_tooltip").forGetter(MachineUpgrade::hasTooltip)
     ).apply(instance, MachineUpgrade::new));
 
     private final float speedMultiplier;
     private final float efficiencyMultiplier;
     private final ResourceLocation upgradeId;
     private final boolean machineSpecific;
+    private final boolean hasTooltip;
 
     public static final ResourceLocation BLANK_KEY = ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "blank");
-    public static final MachineUpgrade BLANK = new MachineUpgrade(BLANK_KEY, 1f, 1f, true);
+    public static final MachineUpgrade BLANK = new MachineUpgrade(BLANK_KEY, -1f, -1f, true, true);
 
-    public MachineUpgrade(ResourceLocation upgradeId, float speed, float efficiency, boolean machineSpecific)
+    public MachineUpgrade(ResourceLocation upgradeId, float speed, float efficiency, boolean machineSpecific, boolean hasTooltip)
     {
         this.speedMultiplier = speed;
         this.efficiencyMultiplier = efficiency;
         this.upgradeId = upgradeId;
         this.machineSpecific = machineSpecific;
+        this.hasTooltip = hasTooltip;
     }
 
     public ResourceLocation getUpgradeId()
@@ -51,17 +54,22 @@ public class MachineUpgrade
 
     public float getSpeedMultiplier()
     {
-        return speedMultiplier;
+        return speedMultiplier > 0 ? speedMultiplier : 1;
     }
 
     public float getEfficiencyMultiplier()
     {
-        return efficiencyMultiplier;
+        return efficiencyMultiplier >= 0 ? efficiencyMultiplier : 1;
     }
 
     public boolean isMachineSpecific()
     {
         return machineSpecific;
+    }
+
+    public boolean hasTooltip()
+    {
+        return hasTooltip;
     }
 
     @Override

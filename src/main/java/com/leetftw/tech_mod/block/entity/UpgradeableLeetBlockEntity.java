@@ -128,6 +128,12 @@ public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
                     case ALWAYS_DENY -> false;
                 };
             }
+
+            @Override
+            public int getMaxStackSize()
+            {
+                return 1;
+            }
         };
     }
 

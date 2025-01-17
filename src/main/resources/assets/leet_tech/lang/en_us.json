@@ -5,11 +5,17 @@
   "item.leet_tech.aesthetic_hammer": "Aesthetic Hammer",
   "item.leet_tech.liquid_aesthetic_bucket": "Bucket of Liquid Aesthetic",
 
+  "item.leet_tech.leet_tech_machine_upgrade.base": "Unknown Machine Upgrade",
   "item.leet_tech.leet_tech_machine_upgrade.blank": "Machine Upgrade Base",
-  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_1": "Machine Speed Upgrade (Tier 1)",
-  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_2": "Machine Speed Upgrade (Tier 2)",
-  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_3": "Machine Speed Upgrade (Tier 3)",
-  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_4": "Machine Speed Upgrade (Tier 4)",
+  "item.leet_tech.leet_tech_machine_upgrade.creative": "§dCreative Machine Upgrade",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_1": "Machine Speed Upgrade (§7Tier 1§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_2": "Machine Speed Upgrade (§aTier 2§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_3": "Machine Speed Upgrade (§bTier 3§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.speed_tier_4": "Machine Speed Upgrade (§6Tier 4§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_1": "Machine Energy Upgrade (§7Tier 1§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_2": "Machine Energy Upgrade (§aTier 2§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_3": "Machine Energy Upgrade (§bTier 3§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_4": "Machine Energy Upgrade (§6Tier 4§r)",
 
   "block.leet_tech.aesthetic_block": "Aesthetic Block",
 
@@ -24,7 +30,7 @@
   "block.leet_tech.crystal_injector": "Crystal Injector",
 
   "block.leet_tech.energy_cell": "Energy Cell",
-  "block.leet_tech.creative_energy_cell": "Creative Energy Cell",
+  "block.leet_tech.creative_energy_cell": "§dCreative Energy Cell",
 
   "block.leet_tech.energy_ring_controller": "Energy Ring Controller",
   "block.leet_tech.energy_ring_casing": "Energy Ring Casing",
@@ -35,6 +41,14 @@
   "block.leet_tech.quarry_controller": "Quarry Controller",
 
   "tooltip.leet_tech.block_entity_energy_tooltip": "Energy: ",
+  "tooltip.leet_tech.machine_upgrade.increase": "Increases",
+  "tooltip.leet_tech.machine_upgrade.decrease": "Decreases",
+  "tooltip.leet_tech.machine_upgrade.speed": "processing time by",
+  "tooltip.leet_tech.machine_upgrade.efficiency": "energy usage by",
+
+  "tooltip.leet_tech.leet_tech_machine_upgrade.blank": "Can be used to craft machine upgrades.",
+  "tooltip.leet_tech.leet_tech_machine_upgrade.creative": "Machines with this upgrade use no power. Any machine operations will be finished in a single tick.",
+
   "gui.leet_tech.block_entity_upgrade_section": "Upgrades",
 
   "itemGroup.leet_tech.items": "LeetTech",

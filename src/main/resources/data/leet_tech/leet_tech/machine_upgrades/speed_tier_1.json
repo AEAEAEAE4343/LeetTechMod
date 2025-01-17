@@ -2,5 +2,6 @@
   "id": "leet_tech:speed_tier_1",
   "speed_multiplier": 0.9,
   "efficiency_multiplier": 1.1,
-  "machine_specific": false
+  "machine_specific": false,
+  "has_tooltip": false
 }
