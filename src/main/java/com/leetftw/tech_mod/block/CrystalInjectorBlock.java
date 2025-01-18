@@ -42,7 +42,7 @@ public class CrystalInjectorBlock extends HorizontalLeetEntityBlock
             ServerPlayer serverPlayer = (ServerPlayer) player;
             if (entity instanceof CrystalInjectorBlockEntity blockEntity)
             {
-                //serverPlayer.openMenu(blockEntity, pos);
+                serverPlayer.openMenu(blockEntity, pos);
             }
         }
 

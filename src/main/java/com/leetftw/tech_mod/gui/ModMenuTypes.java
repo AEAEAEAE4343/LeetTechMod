@@ -20,6 +20,9 @@ public class ModMenuTypes
     public static final Supplier<MenuType<CrystallizerMenu>> CRYSTALLIZER_MENU = MENUS.register("crystallizer_menu",
             resourceLocation -> IMenuTypeExtension.create(CrystallizerMenu::new));
 
+    public static final Supplier<MenuType<CrystalInjectorMenu>> CRYSTAL_INJECTOR_MENU = MENUS.register("crystal_injector_menu",
+            resourceLocation -> IMenuTypeExtension.create(CrystalInjectorMenu::new));
+
     public static void register(IEventBus bus)
     {
         MENUS.register(bus);

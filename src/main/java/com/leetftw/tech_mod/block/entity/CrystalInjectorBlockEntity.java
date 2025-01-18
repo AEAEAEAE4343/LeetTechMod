@@ -2,6 +2,9 @@ package com.leetftw.tech_mod.block.entity;
 
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.fluid.ModFluids;
+import com.leetftw.tech_mod.gui.CrystalInjectorMenu;
+import com.leetftw.tech_mod.gui.CrystallizerMenu;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -12,9 +15,10 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -26,19 +30,42 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
+public class CrystalInjectorBlockEntity extends UpgradeableLeetBlockEntity
 {
     private static final int MAX_DISTANCE = 5;
     private BlockPos targetBlock = null;
     private int laserLength = 0;
     private int progress = 0;
-    private static final int MAX_PROGRESS = 6000;
-    private static final int ENERGY_USAGE = 256;
-    private static final int FLUID_USAGE = 1;
+
+    private static final int BASE_PROCESSING_TIME = 6000;
+    private static final int BASE_ENERGY_USAGE = 256;
+    private static final int FLUID_USAGE = 6000;
+
+    protected final SimpleContainerData data;
 
     public CrystalInjectorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
         super(type, pos, blockState);
+
+        this.data = new SimpleContainerData(2)
+        {
+            @Override
+            public int get(int pIndex)
+            {
+                return switch (pIndex)
+                {
+                    case 0 -> progress;
+                    case 1 -> getProcessingTime(BASE_PROCESSING_TIME);
+                    default -> 0;
+                };
+            }
+
+            @Override
+            public void set(int pIndex, int pValue)
+            {
+                if (pIndex == 0) progress = pValue;
+            }
+        };
     }
 
     public void resetCraft()
@@ -99,20 +126,25 @@ public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
         // Set the laser length to the closest budding amethyst block (for renderer)
         laserLength = targetPos.distManhattan(pos) - 1;
 
+        // Consume fluid before crafting
+        FluidStack storedFluid = fluidsGetSlot(0);
+        if (progress == 0)
+        {
+            if (!storedFluid.is(ModFluids.LIQUID_AESTHETIC) || storedFluid.getAmount() < FLUID_USAGE) return;
+            storedFluid.setAmount(storedFluid.getAmount() - FLUID_USAGE);
+            fluidsSetSlot(0, storedFluid);
+        }
+
         // CRAFTING PROCESS
         // If a conversion is still going, just wait
-        FluidStack storedFluid = fluidsGetSlot(0);
-        if (energyGetStored() >= ENERGY_USAGE
-        && storedFluid.is(ModFluids.LIQUID_AESTHETIC)
-        && storedFluid.getAmount() >= FLUID_USAGE)
+        if (energyGetStored() >= getEnergyUsage(BASE_ENERGY_USAGE))
         {
-            storedFluid.setAmount(storedFluid.getAmount() - FLUID_USAGE);
-            energySetStored(energyGetStored() - ENERGY_USAGE);
+            energySetStored(energyGetStored() - getEnergyUsage(BASE_ENERGY_USAGE));
 
             setProgress(progress + 1);
 
             // If the conversion is done, we change the block into budding aesthetic
-            if (progress >= MAX_PROGRESS)
+            if (progress >= getProcessingTime(BASE_PROCESSING_TIME))
             {
                 finishCraft(level);
             }
@@ -120,62 +152,74 @@ public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
     }
 
     @Override
-    protected int itemsGetSlotCount() {
+    protected int itemsGetSlotCount()
+    {
         return 0;
     }
 
     @Override
-    protected boolean itemsAllowInsert(int slot, Item stack) {
+    protected boolean itemsAllowInsert(int slot, Item stack)
+    {
         return false;
     }
 
     @Override
-    protected boolean itemsAllowExtract(int slot) {
+    protected boolean itemsAllowExtract(int slot)
+    {
         return false;
     }
 
     @Override
-    protected boolean itemsSaveOnBreak() {
+    protected boolean itemsSaveOnBreak()
+    {
         return false;
     }
 
     @Override
-    protected int fluidsGetSlotCount() {
+    protected int fluidsGetSlotCount()
+    {
         return 1;
     }
 
     @Override
-    protected int fluidsGetSlotCapacity(int i) {
-        return 4000;
+    protected int fluidsGetSlotCapacity(int i)
+    {
+        return 6000;
     }
 
     @Override
-    protected boolean fluidsAllowInsert(int slot, Fluid fluid) {
+    protected boolean fluidsAllowInsert(int slot, Fluid fluid)
+    {
         return fluid.isSame(ModFluids.LIQUID_AESTHETIC.get());
     }
 
     @Override
-    protected boolean fluidsAllowExtract(int slot) {
+    protected boolean fluidsAllowExtract(int slot)
+    {
         return false;
     }
 
     @Override
-    protected int energyGetCapacity() {
+    protected int energyGetCapacity()
+    {
         return 1_000_000;
     }
 
     @Override
-    protected boolean energyAllowInsert() {
+    protected boolean energyAllowInsert()
+    {
         return true;
     }
 
     @Override
-    protected boolean energyAllowExtract() {
+    protected boolean energyAllowExtract()
+    {
         return false;
     }
 
     @Override
-    protected int energyGetTransferRate() {
+    protected int energyGetTransferRate()
+    {
         return 1000;
     }
 
@@ -216,7 +260,20 @@ public class CrystalInjectorBlockEntity extends BaseLeetBlockEntity
     }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
-        return null;
+    public int upgradesGetSlotCount()
+    {
+        return 4;
+    }
+
+    @Override
+    public boolean upgradesAllowUpgrade(MachineUpgrade upgradeItem)
+    {
+        return false;
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player)
+    {
+        return new CrystalInjectorMenu(i, inventory, ContainerLevelAccess.create(player.level(), getBlockPos()), this, data);
     }
 }

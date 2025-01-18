@@ -2,6 +2,7 @@ package com.leetftw.tech_mod.block.entity;
 
 import com.leetftw.tech_mod.item.ModItems;
 import com.leetftw.tech_mod.gui.CrystallizerMenu;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class CrystallizerBlockEntity extends BaseLeetBlockEntity
+public class CrystallizerBlockEntity extends UpgradeableLeetBlockEntity
 {
     private static final int ITEM_SLOTS = 2;
     private static final int INPUT_SLOT = 0;
@@ -29,6 +30,9 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
 
     private static final int FLUID_CONTAINERS = 1;
     private static final int INPUT_CONTAINER = 0;
+
+    private static final int BASE_ENERGY_USAGE = 128;
+    private static final int BASE_PROCESSING_TIME = 200;
 
     protected final SimpleContainerData data;
     private int progress = 0;
@@ -46,7 +50,7 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
                 return switch (pIndex)
                 {
                     case 0 -> progress;
-                    case 1 -> maxProgress;
+                    case 1 -> getProcessingTime(BASE_PROCESSING_TIME);
                     default -> 0;
                 };
             }
@@ -54,11 +58,7 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
             @Override
             public void set(int pIndex, int pValue)
             {
-                switch (pIndex)
-                {
-                    case 0 -> progress = pValue;
-                    case 1 -> maxProgress = pValue;
-                }
+                if (pIndex == 0) progress = pValue;
             }
         };
     }
@@ -67,13 +67,14 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
     {
         if (hasRecipe())
         {
-            if (energyGetStored() >= 128)
+            if (energyGetStored() >= getEnergyUsage(BASE_ENERGY_USAGE))
             {
-                energySetStored(energyGetStored() - 128);
+                energySetStored(energyGetStored() - getEnergyUsage(BASE_ENERGY_USAGE));
                 setProgress(progress + 1);
             }
 
-            if (progress >= maxProgress) {
+            if (progress >= getProcessingTime(BASE_PROCESSING_TIME))
+            {
                 craftItem();
                 setProgress(0);
             }
@@ -105,9 +106,6 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
     {
         progress = newProg;
         setChangedAndUpdate();
-
-        /*if (progress == 0) setItem(8, ItemStack.EMPTY);
-        else setItem(8, new ItemStack(Items.DIRT, progress / 2));*/
     }
 
     @Override
@@ -129,7 +127,8 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
     }
 
     @Override
-    protected boolean itemsSaveOnBreak() {
+    protected boolean itemsSaveOnBreak()
+    {
         return false;
     }
 
@@ -158,23 +157,27 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
     }
 
     @Override
-    protected int energyGetCapacity() {
+    protected int energyGetCapacity()
+    {
         return 25000;
     }
 
     @Override
-    protected boolean energyAllowInsert() {
+    protected boolean energyAllowInsert()
+    {
         return true;
     }
 
     @Override
-    protected boolean energyAllowExtract() {
+    protected boolean energyAllowExtract()
+    {
         return false;
     }
 
     @Override
-    protected int energyGetTransferRate() {
-        return 256;
+    protected int energyGetTransferRate()
+    {
+        return 2 * getEnergyUsage(BASE_ENERGY_USAGE);
     }
 
     @Override
@@ -191,6 +194,18 @@ public class CrystallizerBlockEntity extends BaseLeetBlockEntity
     {
         super.loadAdditional(pTag, registries);
         progress = pTag.getInt("crystallizer.progress");
+    }
+
+    @Override
+    public int upgradesGetSlotCount()
+    {
+        return 4;
+    }
+
+    @Override
+    public boolean upgradesAllowUpgrade(MachineUpgrade upgradeItem)
+    {
+        return false;
     }
 
     @Override

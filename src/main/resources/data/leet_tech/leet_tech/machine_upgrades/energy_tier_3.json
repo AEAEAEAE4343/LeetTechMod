@@ -1,7 +1,7 @@
 {
-  "id": "leet_tech:efficiency_tier_4",
+  "id": "leet_tech:energy_tier_3",
   "speed_multiplier": -1,
-  "efficiency_multiplier": 0.5,
+  "efficiency_multiplier": 0.65,
   "machine_specific": false,
   "has_tooltip": false
 }

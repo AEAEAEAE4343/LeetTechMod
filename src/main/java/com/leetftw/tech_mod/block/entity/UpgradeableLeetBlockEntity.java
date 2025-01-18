@@ -29,6 +29,7 @@ public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
         public void clearContent()
         {
             UPGRADES_INVENTORY.clear();
+            setChangedAndUpdate();
         }
 
         @Override
@@ -70,6 +71,7 @@ public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
         public void setItem(int i, @NotNull ItemStack itemStack)
         {
             UPGRADES_INVENTORY.set(i, itemStack);
+            setChangedAndUpdate();
         }
 
         @Override
@@ -152,6 +154,23 @@ public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
         return UPGRADES_INVENTORY.stream().filter(itemStack -> !itemStack.isEmpty())
                 .map(a -> upgradeFromId(a.get(ModDataComponents.MACHINE_UPGRADE)).getSpeedMultiplier())
                 .reduce(1.0f, (a,b) -> a * b);
+    }
+
+    protected int getProcessingTime(int baseValue)
+    {
+        return (int)Math.ceil(baseValue * getSpeedMultiplier());
+    }
+
+    protected int getEnergyUsage(int baseValue)
+    {
+        return (int)Math.ceil(baseValue * getEfficiencyMultiplier());
+    }
+
+    protected float getEfficiencyMultiplier()
+    {
+        return UPGRADES_INVENTORY.stream().filter(itemStack -> !itemStack.isEmpty())
+                .map(a -> upgradeFromId(a.get(ModDataComponents.MACHINE_UPGRADE)).getEfficiencyMultiplier())
+                .reduce(1.0f, (a, b) -> a * b);
     }
 
     protected boolean hasUpgradeType(MachineUpgrade type)

@@ -29,7 +29,7 @@ public class GemRefineryBlockEntity extends UpgradeableLeetBlockEntity
 
     protected final SimpleContainerData data;
     private int progress = 0;
-    private static final int PROCESSING_TIME = 120;
+    private static final int BASE_PROCESSING_TIME = 120;
 
     public GemRefineryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
@@ -186,7 +186,7 @@ public class GemRefineryBlockEntity extends UpgradeableLeetBlockEntity
 
     private int getProcessingTime()
     {
-        return (int)Math.ceil(PROCESSING_TIME * getSpeedMultiplier());
+        return (int)Math.ceil(BASE_PROCESSING_TIME * getSpeedMultiplier());
     }
 
     // BlockEntity

@@ -3,15 +3,12 @@ package com.leetftw.tech_mod.item.upgrade;
 import com.leetftw.tech_mod.item.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.awt.*;
 import java.util.List;
 
 public class MachineUpgradeItem extends Item
@@ -82,6 +79,5 @@ public class MachineUpgradeItem extends Item
     public int getMaxStackSize(ItemStack stack)
     {
         return 16;
-        //return stack.get(ModDataComponents.MACHINE_UPGRADE).equals(MachineUpgrade.BLANK_KEY) ? 16 : 1;
     }
 }

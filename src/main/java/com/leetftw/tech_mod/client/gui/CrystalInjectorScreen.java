@@ -1,23 +1,25 @@
 package com.leetftw.tech_mod.client.gui;
 
 import com.leetftw.tech_mod.LeetTechMod;
-import com.leetftw.tech_mod.gui.CrystallizerMenu;
+import com.leetftw.tech_mod.block.ModBlocks;
+import com.leetftw.tech_mod.gui.CrystalInjectorMenu;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public class CrystallizerScreen extends UpgradeableScreen<CrystallizerMenu>
+public class CrystalInjectorScreen extends UpgradeableScreen<CrystalInjectorMenu>
 {
     private static final ResourceLocation BACKGROUND =
-            ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/container/crystallizer.png");
+            ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/container/crystal_injector.png");
     private static final ResourceLocation PROGRESS_SPRITE =
             ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/sprites/container/crystallizer/progress.png");
 
@@ -38,15 +40,18 @@ public class CrystallizerScreen extends UpgradeableScreen<CrystallizerMenu>
     private static final int FLUID_WIDTH = 16;
     private static final int FLUID_HEIGHT = 54;
 
-    public CrystallizerScreen(CrystallizerMenu menu, Inventory playerInventory, Component title)
+    public CrystalInjectorScreen(CrystalInjectorMenu menu, Inventory playerInventory, Component title)
     {
         super(menu, playerInventory, title);
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1)
+    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY)
     {
-        // Draw BG
+        // TODO: this function shares 59 lines with CrystallizerScreen
+        //       Make util class for this, or include some of this functionality in a core class
+
+        // Draw background
         guiGraphics.blit(RenderType::guiTextured,
                 BACKGROUND,
                 leftPos, topPos,
@@ -106,5 +111,9 @@ public class CrystallizerScreen extends UpgradeableScreen<CrystallizerMenu>
                 heightRendered += heightToRender;
             }
         }
+
+        // Render crafting recipe
+        guiGraphics.renderItem(new ItemStack(Blocks.BUDDING_AMETHYST), leftPos + 69, topPos + 35);
+        guiGraphics.renderItem(new ItemStack(ModBlocks.BUDDING_AESTHETIC_BLOCK_ITEM.get()), leftPos + 122, topPos + 35);
     }
 }

@@ -10,56 +10,26 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 
-public class GemRefineryScreen extends AbstractContainerScreen<GemRefineryMenu>
+public class GemRefineryScreen extends UpgradeableScreen<GemRefineryMenu>
 {
     private static final ResourceLocation BACKGROUND =
             ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/container/gem_refinery.png");
     private static final ResourceLocation PROGRESS_SPRITE =
             ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/sprites/container/gem_refinery/progress.png");
 
-    private static final ResourceLocation UPGRADE_OVERLAY =
-            ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "textures/gui/sprites/container/common/upgrade_overlay.png");
+    private static final int BG_WIDTH = 176;
+    private static final int BG_HEIGHT = 166;
 
     private static final int PROGRESS_WIDTH = 40;
     private static final int PROGRESS_HEIGHT = 16;
 
-    private static final int BG_WIDTH = 176;
-    private static final int BG_HEIGHT = 166;
-
-    // TODO: Make base Screen class for upgradeable blocks
-    private static final int UPGRADE_OVERLAY_WIDTH = 55;
-    private static final int UPGRADE_OVERLAY_HEIGHT = 58;
-
     public GemRefineryScreen(GemRefineryMenu menu, Inventory playerInventory, Component title)
     {
         super(menu, playerInventory, title);
-        imageWidth = BG_WIDTH + UPGRADE_OVERLAY_WIDTH;
-        // these are default already
-        //imageWidth = 176;
-        //imageHeight = 166;
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(graphics, mouseX, mouseY);
-    }
-
-    @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        super.renderLabels(guiGraphics, mouseX, mouseY);
-
-        Component text = Component.translatable("gui.leet_tech.block_entity_upgrade_section");
-        FormattedCharSequence formattedcharsequence = text.getVisualOrderText();
-
-        guiGraphics.drawString(font, text, (BG_WIDTH + 25) - font.width(formattedcharsequence) / 2,
-                titleLabelY + 2, 4210752, false);
-        //guiGraphics.drawCenteredString(font, Component.translatable("gui.leet_tech.block_entity_upgrade_section"),
-        //        titleLabelX + BG_WIDTH + 25, titleLabelY + 3, 4210752);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics guiGraphics, float v, int i, int i1)
+    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY)
     {
         guiGraphics.blit(RenderType::guiTextured,
                 BACKGROUND,
@@ -67,14 +37,6 @@ public class GemRefineryScreen extends AbstractContainerScreen<GemRefineryMenu>
                 0, 0,
                 BG_WIDTH, BG_HEIGHT,
                 256, 256);
-
-        // draw upgrade overlay
-        guiGraphics.blit(RenderType::guiTextured,
-                UPGRADE_OVERLAY,
-                leftPos + BG_WIDTH, topPos + 3,
-                0, 0,
-                UPGRADE_OVERLAY_WIDTH, UPGRADE_OVERLAY_HEIGHT,
-                UPGRADE_OVERLAY_WIDTH, UPGRADE_OVERLAY_HEIGHT);
 
         if (menu.isCrafting())
         {

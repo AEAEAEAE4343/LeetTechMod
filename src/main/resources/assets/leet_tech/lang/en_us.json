@@ -12,10 +12,10 @@
   "item.leet_tech.leet_tech_machine_upgrade.speed_tier_2": "Machine Speed Upgrade (§aTier 2§r)",
   "item.leet_tech.leet_tech_machine_upgrade.speed_tier_3": "Machine Speed Upgrade (§bTier 3§r)",
   "item.leet_tech.leet_tech_machine_upgrade.speed_tier_4": "Machine Speed Upgrade (§6Tier 4§r)",
-  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_1": "Machine Energy Upgrade (§7Tier 1§r)",
-  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_2": "Machine Energy Upgrade (§aTier 2§r)",
-  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_3": "Machine Energy Upgrade (§bTier 3§r)",
-  "item.leet_tech.leet_tech_machine_upgrade.efficiency_tier_4": "Machine Energy Upgrade (§6Tier 4§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.energy_tier_1": "Machine Energy Upgrade (§7Tier 1§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.energy_tier_2": "Machine Energy Upgrade (§aTier 2§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.energy_tier_3": "Machine Energy Upgrade (§bTier 3§r)",
+  "item.leet_tech.leet_tech_machine_upgrade.energy_tier_4": "Machine Energy Upgrade (§6Tier 4§r)",
 
   "block.leet_tech.aesthetic_block": "Aesthetic Block",
 
@@ -50,6 +50,8 @@
   "tooltip.leet_tech.leet_tech_machine_upgrade.creative": "Machines with this upgrade use no power. Any machine operations will be finished in a single tick.",
 
   "gui.leet_tech.block_entity_upgrade_section": "Upgrades",
+
+  "reiGroup.leet_tech.machine_upgrades": "LeetTech Machine Upgrades",
 
   "itemGroup.leet_tech.items": "LeetTech",
   "fluid_type.leet_tech.liquid_aesthetic": "Liquid Aesthetic",
