@@ -37,6 +37,9 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     ArrayList<Triple<BooleanProperty, BooleanProperty, BooleanProperty>> cornerConnections = new ArrayList<>();
     ArrayList<Triple<Integer, Integer, Direction>> edgeConnections = new ArrayList<>();
 
+    private static final int MAX_QUARRY_SIZE = 32;
+    private static final int MAX_QUARRY_HEIGHT = 5;
+
     public QuarryControllerBlock(Properties properties)
     {
         super(properties);
@@ -75,7 +78,7 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
 
     private boolean isCorner(BlockState blockState)
     {
-        if (!(blockState.getBlock() instanceof QuarryFrameBlock))
+        if (!blockState.is(ModBlocks.QUARRY_FRAME))
             return false;
 
         boolean northCon = blockState.getValue(QuarryFrameBlock.NORTH_CON);
@@ -92,6 +95,9 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
 
     private List<Direction> getConnections(BlockState blockState)
     {
+        if (!blockState.is(ModBlocks.QUARRY_FRAME))
+            return List.of();
+
         List<Direction> connections = new ArrayList<>();
         boolean northCon = blockState.getValue(QuarryFrameBlock.NORTH_CON);
         if (northCon) connections.add(Direction.NORTH);
@@ -109,7 +115,9 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
     }
 
     // As complicated as this function looks, it's complexity is at max O(frame block count)
-    // TODO: potentially optimize this function
+    // This is as optimized as I can get it. It only gets ran once when the player right clicks the block
+    // so this shouldn't be a hot path.
+    // TODO: Component.translatable should be used here
     private FormationResult checkFormed(Level level, BlockPos pos, List<BlockPos> cornerPositions)
     {
         // First check if we have a neighbouring corner piece facing up
@@ -142,10 +150,17 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         corners.add(startingPosition);
         for (Direction direction : directions)
         {
+            int length = 1;
             BlockPos currentPos = startingPosition;
             while (true)
             {
                 currentPos = currentPos.relative(direction);
+
+                if (length == MAX_QUARRY_SIZE)
+                    return new FormationResult(false, "Too big! Max size is 32x5x32", currentPos);
+                else if (direction == Direction.UP && length == MAX_QUARRY_HEIGHT)
+                    return new FormationResult(false, "Too big! Max size is 32x5x32", currentPos);
+
                 BlockState currentState = level.getBlockState(currentPos);
                 if (currentState.getBlock() instanceof QuarryFrameBlock)
                 {
@@ -154,7 +169,10 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
                     if (connections.size() == 2
                             && connections.contains(direction)
                             && connections.contains(direction.getOpposite()))
+                    {
+                        length++;
                         continue;
+                    }
 
                     // Valid corner piece
                     if (connections.size() == 3 && connections.contains(direction.getOpposite()))
@@ -212,10 +230,11 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
         {
             BlockState cornerState = level.getBlockState(corners.get(i));
             Triple<BooleanProperty, BooleanProperty, BooleanProperty> properties = cornerConnections.get(i);
-            if (!cornerState.getValue(properties.getLeft())
+            if (!cornerState.is(ModBlocks.QUARRY_FRAME)
+                    || !cornerState.getValue(properties.getLeft())
                     || !cornerState.getValue(properties.getMiddle())
                     || !cornerState.getValue(properties.getRight()))
-                return new FormationResult(false, "Expected frame corner!", corners.get(0));
+                return new FormationResult(false, "Expected frame corner!", corners.get(i));
         }
 
         // 4. We traverse the 12 edges of the prism

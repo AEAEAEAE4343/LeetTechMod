@@ -180,8 +180,6 @@ public class QuarryRenderer implements BlockEntityRenderer<QuarryControllerBlock
         }
     }
 
-    // TODO: Get ALL of these quads pre-loaded in constructor
-    //       Probably even static.
     @Override
     public void render(QuarryControllerBlockEntity quarryBe, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay)
     {

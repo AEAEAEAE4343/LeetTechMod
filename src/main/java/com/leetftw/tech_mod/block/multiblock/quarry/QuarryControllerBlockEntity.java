@@ -75,7 +75,6 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 
     public int getProcessingTime()
     {
-        // TODO: implement upgrade system for all machines
         return BASE_PROCESSING_TIME;
     }
 
