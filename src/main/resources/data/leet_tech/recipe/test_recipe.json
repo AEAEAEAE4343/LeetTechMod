@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "components": {
+        "minecraft:stored_enchantments": {
+          "levels": {
+            "minecraft:sharpness": 4
+          }
+        }
+      },
+      "items": "minecraft:enchanted_book",
+      "strict": false
+    }
+  },
+  "pattern": [
+    "   ",
+    "   ",
+    "  B"
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:dirt"
+  }
+}

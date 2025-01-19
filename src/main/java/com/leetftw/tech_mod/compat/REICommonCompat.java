@@ -12,6 +12,7 @@ public class REICommonCompat implements REICommonPlugin
     @Override
     public void registerItemComparators(ItemComparatorRegistry registry)
     {
-        registry.register((context, stack) -> stack.hashCode(), ModItems.MACHINE_UPGRADE.get());
+        registry.register((context, stack) ->
+                context.isExact() ? stack.hashCode() : stack.get(ModDataComponents.MACHINE_UPGRADE.get()).hashCode(), ModItems.MACHINE_UPGRADE.get());
     }
 }

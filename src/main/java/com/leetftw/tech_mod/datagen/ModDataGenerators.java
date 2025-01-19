@@ -26,7 +26,7 @@ public class ModDataGenerators
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
         generator.addProvider(true, new ModModelProvider(packOutput));
-        generator.addProvider(true, new ModRecipeProvider(packOutput, lookupProvider));
+        generator.addProvider(true, new ModRecipeProvider.Runner(packOutput, lookupProvider));
         generator.addProvider(true, new LootTableProvider(packOutput, Set.of(), List.of(new LootTableProvider.SubProviderEntry(
                 ModBlockLootTableProvider::new,
                 LootContextParamSets.BLOCK // it makes sense to use BLOCK here

@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 public abstract class TextureProvider implements DataProvider
 {
-    private class Entry
+    private static class Entry
     {
         public List<ResourceLocation> sourceTextures;
         public ResourceLocation destinationTexture;

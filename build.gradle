@@ -122,8 +122,9 @@ dependencies {
     // localRuntime "mezz.jei:jei-${mc_version}-neoforge:${jei_version}"
 
     // REI API for Forge (Architectury Loom)
-    compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${rei_version}"
-    compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:${rei_version}"
+    //compileOnly "me.shedaniel:RoughlyEnoughItems-api-neoforge:${rei_version}"
+    //compileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-neoforge:${rei_version}"
+    compileOnly "me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}"
 
     // REI Runtime for Forge (Architectury Loom)
     localRuntime "me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}"
