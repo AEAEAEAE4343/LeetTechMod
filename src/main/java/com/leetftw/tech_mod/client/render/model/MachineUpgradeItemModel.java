@@ -8,7 +8,7 @@ import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import com.mojang.math.Transformation;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.TextureSlots;
@@ -51,7 +51,7 @@ public class MachineUpgradeItemModel implements ItemModel
         BakedModel model = getOverlayModel(stack);
         ItemStackRenderState.LayerRenderState layerState = state.newLayer();
         if (stack.hasFoil()) layerState.setFoilType(ItemStackRenderState.FoilType.STANDARD);
-        layerState.setupBlockModel(model, RenderType.CUTOUT);
+        layerState.setupBlockModel(model, Sheets.cutoutBlockSheet());
     }
 
     public record Unbaked() implements ItemModel.Unbaked {
