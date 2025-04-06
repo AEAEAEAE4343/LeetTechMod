@@ -1,7 +1,10 @@
 package com.leetftw.tech_mod.block.multiblock.quarry;
 
+import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.entity.BaseLeetBlockEntity;
+import com.leetftw.tech_mod.block.entity.UpgradeableLeetBlockEntity;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
+import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import com.leetftw.tech_mod.util.DebugHelper;
 import com.leetftw.tech_mod.util.ItemHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -13,6 +16,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,14 +40,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
+public class QuarryControllerBlockEntity extends UpgradeableLeetBlockEntity
 {
-    private final static int BASE_ENERGY_USAGE = 2048;
+    private final static int BASE_ENERGY_USAGE = 512;
     private final static int BASE_PROCESSING_TIME = 20;
     private final static ItemStack HARVEST_TOOL = new ItemStack(Items.NETHERITE_PICKAXE, 1);
 
-    private static final int UPGRADE_SLOTS = 4;
+    private final static ResourceLocation SILK_TOUCH_UPGRADE = ResourceLocation.fromNamespaceAndPath(LeetTechMod.MOD_ID, "quarry_silk_touch");
 
+    private static final int UPGRADE_SLOTS = 4;
 
     private BlockPos cornerOne = BlockPos.ZERO;
     private BlockPos cornerTwo = BlockPos.ZERO;
@@ -71,11 +76,6 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
     public QuarryControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
         super(type, pos, blockState);
-    }
-
-    public int getProcessingTime()
-    {
-        return BASE_PROCESSING_TIME;
     }
 
     // TODO: remove
@@ -144,6 +144,7 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 
     public void decreaseProgress()
     {
+        int energyUsage = getEnergyUsage(BASE_ENERGY_USAGE);
         progress--;
         setChangedAndUpdate();
     }
@@ -235,7 +236,7 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
 
     private void calculateMoveProgress()
     {
-        double movementSpeed = 1 / (getProcessingTime() / 4.0); // Meters / Tick
+        double movementSpeed = 1.0 / getProcessingTime(BASE_PROCESSING_TIME / 4.0); // Meters / Tick
         double distance = Math.sqrt(
                 Math.pow(nextBlockRelX - currentBlockRelX, 2) +
                         Math.pow(nextBlockRelZ - currentBlockRelZ, 2)
@@ -358,14 +359,14 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
             // Empty block, go into idling state
             DebugHelper.chatOutput("Mining air: " + getTargetPosition());
             currentState = State.MiningEmpty;
-            progress = getProcessingTime() / 5;
+            progress = getProcessingTime(BASE_PROCESSING_TIME / 5);
             return;
         }
 
         // Real block, go into mining state
         DebugHelper.chatOutput("Mining block: " + getTargetPosition());
         currentState = State.MiningBlock;
-        progress = getProcessingTime();
+        progress = getProcessingTime(BASE_PROCESSING_TIME);
 
         // TODO: Don't forget to consume power and Liquid Aesthetic
     }
@@ -514,6 +515,18 @@ public class QuarryControllerBlockEntity extends BaseLeetBlockEntity
             badBlockPosition = BlockPos.of(pTag.getLong("quarry_badblock_pos"));
             badBlockHighlightDuration = 100;
         }
+    }
+
+    @Override
+    public int upgradesGetSlotCount()
+    {
+        return UPGRADE_SLOTS;
+    }
+
+    @Override
+    public boolean upgradesAllowUpgrade(MachineUpgrade upgradeItem)
+    {
+        return upgradeItem.getUpgradeId().compareNamespaced(SILK_TOUCH_UPGRADE) == 0;
     }
 
     @Override

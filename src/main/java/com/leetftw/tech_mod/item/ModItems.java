@@ -19,6 +19,8 @@ public class ModItems
     public static final DeferredItem<Item> AESTHETIC_DUST = ITEMS.registerSimpleItem("aesthetic_dust", new Item.Properties());
     public static final DeferredItem<Item> TINY_AESTHETIC_DUST_PILE = ITEMS.registerSimpleItem("tiny_aesthetic_dust_pile", new Item.Properties());
 
+    public static final DeferredItem<Item> SHINY_REDSTONE = ITEMS.registerSimpleItem("shiny_redstone", new Item.Properties());
+
     public static final DeferredItem<Item> AESTHETIC_CRYSTAL = ITEMS.registerSimpleItem("aesthetic_crystal", new Item.Properties());
 
     public static final DeferredItem<AestheticHammerItem> AESTHETIC_HAMMER = ITEMS.registerItem("aesthetic_hammer",

@@ -4,6 +4,7 @@ import com.leetftw.tech_mod.LeetTechMod;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,6 +32,7 @@ public class ModDataGenerators
                 ModBlockLootTableProvider::new,
                 LootContextParamSets.BLOCK // it makes sense to use BLOCK here
         )), lookupProvider));
+        generator.addProvider(true, new AdvancementProvider(packOutput, lookupProvider, List.of(new ModAdvancementGenerator())));
 
         // Some merged textures need to be generated in the datagen pass
         // This is not intended, but makes it easier to share parts of textures

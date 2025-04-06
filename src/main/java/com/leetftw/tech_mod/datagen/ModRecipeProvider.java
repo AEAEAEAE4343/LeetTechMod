@@ -5,6 +5,10 @@ import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.item.ModDataComponents;
 import com.leetftw.tech_mod.item.ModItems;
 import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ImpossibleTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
@@ -52,6 +56,11 @@ public class ModRecipeProvider extends RecipeProvider
                 .hasComponents(componentPredicate(component, value)).build();
     }
 
+    private Criterion<ImpossibleTrigger.TriggerInstance> impossible()
+    {
+        return CriteriaTriggers.IMPOSSIBLE.createCriterion(new ImpossibleTrigger.TriggerInstance());
+    }
+
     @Override
     protected void buildRecipes()
     {
@@ -81,6 +90,7 @@ public class ModRecipeProvider extends RecipeProvider
                 .unlockedBy("has_aesthetic_dust", has(ModItems.AESTHETIC_DUST))
                 .save(output);
 
+        // MACHINE UPGRADE - SPEED
         shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
                 DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_1")).build()))
                 .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), MachineUpgrade.BLANK_KEY))
@@ -89,7 +99,8 @@ public class ModRecipeProvider extends RecipeProvider
                 .pattern("SCS")
                 .pattern("CUC")
                 .pattern("SCS")
-                .unlockedBy("has_machine_upgrade", has(ModItems.MACHINE_UPGRADE))
+                .unlockedBy("impossible", impossible())
+                //.unlockedBy("has_machine_upgrade", has(ModItems.MACHINE_UPGRADE))
                 .save(output, "leet_tech:machine_upgrade_speed_tier_1");
 
         shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
@@ -97,11 +108,84 @@ public class ModRecipeProvider extends RecipeProvider
                 .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_1")))
                 .define('C', ModItems.AESTHETIC_CRYSTAL)
                 .define('E', Items.EMERALD)
-                .pattern("ECE")
+                .define('S', Items.SUGAR)
+                .pattern("SCE")
                 .pattern("UCU")
-                .pattern("ECE")
-                .unlockedBy("has_machine_upgrade", inventoryTrigger(itemPredicate(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_1"))))
+                .pattern("ECS")
+                .unlockedBy("impossible", impossible())
                 .save(output, "leet_tech:machine_upgrade_speed_tier_2");
+
+        shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
+                DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_3")).build()))
+                .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_2")))
+                .define('C', ModItems.AESTHETIC_CRYSTAL)
+                .define('D', Items.DIAMOND)
+                .define('S', Items.SUGAR)
+                .pattern("SCD")
+                .pattern("UCU")
+                .pattern("DCS")
+                .unlockedBy("impossible", impossible())
+                .save(output, "leet_tech:machine_upgrade_speed_tier_3");
+
+        shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
+                DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_4")).build()))
+                .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("speed_tier_3")))
+                .define('C', ModItems.AESTHETIC_CRYSTAL)
+                .define('N', Items.NETHERITE_INGOT)
+                .define('S', Items.SUGAR)
+                .pattern("SCN")
+                .pattern("UCU")
+                .pattern("NCS")
+                .unlockedBy("impossible", impossible())
+                .save(output, "leet_tech:machine_upgrade_speed_tier_4");
+
+        // MACHINE UPGRADE - EFFICIENCY
+        shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
+                DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_1")).build()))
+                .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), MachineUpgrade.BLANK_KEY))
+                .define('R', ModItems.SHINY_REDSTONE)
+                .define('S', Items.COPPER_INGOT)
+                .pattern("SRS")
+                .pattern("RUR")
+                .pattern("SRS")
+                .unlockedBy("impossible", impossible())
+                .save(output, "leet_tech:machine_upgrade_energy_tier_1");
+
+        shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
+                DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_2")).build()))
+                .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_1")))
+                .define('R', ModItems.SHINY_REDSTONE)
+                .define('E', Items.EMERALD)
+                .define('S', Items.COPPER_INGOT)
+                .pattern("SRE")
+                .pattern("RUR")
+                .pattern("ERS")
+                .unlockedBy("impossible", impossible())
+                .save(output, "leet_tech:machine_upgrade_energy_tier_2");
+
+        shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
+                DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_3")).build()))
+                .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_2")))
+                .define('R', ModItems.SHINY_REDSTONE)
+                .define('D', Items.DIAMOND)
+                .define('S', Items.COPPER_INGOT)
+                .pattern("SRD")
+                .pattern("RUR")
+                .pattern("DRS")
+                .unlockedBy("impossible", impossible())
+                .save(output, "leet_tech:machine_upgrade_energy_tier_3");
+
+        shaped(RecipeCategory.MISC, new ItemStack(ModItems.MACHINE_UPGRADE, 1,
+                DataComponentPatch.builder().set(ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_4")).build()))
+                .define('U', predicateIngredient(ModItems.MACHINE_UPGRADE, ModDataComponents.MACHINE_UPGRADE.get(), modLoc("energy_tier_3")))
+                .define('R', ModItems.SHINY_REDSTONE)
+                .define('N', Items.NETHERITE_INGOT)
+                .define('S', Items.COPPER_INGOT)
+                .pattern("SRN")
+                .pattern("RUR")
+                .pattern("NRS")
+                .unlockedBy("impossible", impossible())
+                .save(output, "leet_tech:machine_upgrade_energy_tier_4");
 
         oreCooking(RecipeSerializer.SMELTING_RECIPE, SmeltingRecipe::new, List.of(Items.DIAMOND), RecipeCategory.MISC, ModItems.TINY_AESTHETIC_DUST_PILE, 0.25f, 1600, "tiny_aesthetic_dust_pile", "_from_smelting");
         oreCooking(RecipeSerializer.BLASTING_RECIPE, BlastingRecipe::new, List.of(Items.DIAMOND), RecipeCategory.MISC, ModItems.TINY_AESTHETIC_DUST_PILE, 0.25f, 1600, "tiny_aesthetic_dust_pile", "_from_blasting");

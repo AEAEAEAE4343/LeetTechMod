@@ -156,6 +156,11 @@ public abstract class UpgradeableLeetBlockEntity extends BaseLeetBlockEntity
                 .reduce(1.0f, (a,b) -> a * b);
     }
 
+    protected double getProcessingTime(double baseValue)
+    {
+        return baseValue * getSpeedMultiplier();
+    }
+
     protected int getProcessingTime(int baseValue)
     {
         return (int)Math.ceil(baseValue * getSpeedMultiplier());

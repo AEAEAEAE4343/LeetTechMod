@@ -9,6 +9,7 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -86,7 +87,10 @@ class HammerBreakingHandler
 
         for (BlockPos pos : POSITIONS_MINED)
         {
-            if (pos == event.getPos() || !hammerItem.isCorrectToolForDrops(serverPlayer.getMainHandItem(), event.getLevel().getBlockState(pos)))
+            BlockState targetBlock = event.getLevel().getBlockState(pos);
+            if (pos == event.getPos()
+                    || (!hammerItem.isCorrectToolForDrops(serverPlayer.getMainHandItem(), targetBlock)
+                    && targetBlock.requiresCorrectToolForDrops()))
                 continue;
 
             serverPlayer.gameMode.destroyBlock(pos);
