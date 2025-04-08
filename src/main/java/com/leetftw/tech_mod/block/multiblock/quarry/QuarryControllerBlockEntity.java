@@ -4,6 +4,7 @@ import com.leetftw.tech_mod.LeetTechMod;
 import com.leetftw.tech_mod.block.entity.BaseLeetBlockEntity;
 import com.leetftw.tech_mod.block.entity.UpgradeableLeetBlockEntity;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
+import com.leetftw.tech_mod.gui.QuarryMenu;
 import com.leetftw.tech_mod.item.upgrade.MachineUpgrade;
 import com.leetftw.tech_mod.util.DebugHelper;
 import com.leetftw.tech_mod.util.ItemHelper;
@@ -21,6 +22,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -73,9 +76,34 @@ public class QuarryControllerBlockEntity extends UpgradeableLeetBlockEntity
     private State currentState = State.Halted;
     private List<ItemStack> currentItems = List.of();
 
+    private SimpleContainerData data;
+
     public QuarryControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState)
     {
         super(type, pos, blockState);
+        data = new SimpleContainerData(6)
+        {
+            @Override
+            public int get(int pIndex)
+            {
+                return switch (pIndex)
+                {
+                    case 0 -> progress;
+                    case 1 -> getProcessingTime(BASE_PROCESSING_TIME);
+                    case 2 -> currentState.ordinal();
+                    case 3 -> currentBlockRelX + getBlockPos().getX();
+                    case 4 -> currentY;
+                    case 5 -> currentBlockRelZ + getBlockPos().getZ();
+                    default -> 0;
+                };
+            }
+
+            @Override
+            public void set(int pIndex, int pValue)
+            {
+
+            }
+        };
     }
 
     // TODO: remove
@@ -530,35 +558,54 @@ public class QuarryControllerBlockEntity extends UpgradeableLeetBlockEntity
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries)
+    {
         super.saveAdditional(pTag, registries);
         saveData(pTag, registries, true, false);
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries)
+    {
         CompoundTag tag = new CompoundTag();
         saveData(tag, registries, false, true);
         return tag;
     }
 
     @Override
-    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket()
+    {
         return ClientboundBlockEntityDataPacket.create(this);
     }
     //endregion
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
-        return null;
+    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player)
+    {
+        return new QuarryMenu(i, inventory, ContainerLevelAccess.create(player.level(), getBlockPos()), this, data);
     }
 
-    private enum State {
+    public enum State
+    {
         Idling,
         Moving,
         MiningEmpty,
         MiningBlock,
         PushingItems,
-        Halted,
+        Halted;
+
+        public static State fromInteger(int x)
+        {
+            return switch (x)
+            {
+                case 0 -> Idling;
+                case 1 -> Moving;
+                case 2 -> MiningEmpty;
+                case 3 -> MiningBlock;
+                case 4 -> PushingItems;
+                case 5 -> Halted;
+                default -> null;
+            };
+        }
     }
 }

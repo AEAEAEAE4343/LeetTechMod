@@ -23,6 +23,9 @@ public class ModMenuTypes
     public static final Supplier<MenuType<CrystalInjectorMenu>> CRYSTAL_INJECTOR_MENU = MENUS.register("crystal_injector_menu",
             resourceLocation -> IMenuTypeExtension.create(CrystalInjectorMenu::new));
 
+    public static final Supplier<MenuType<QuarryMenu>> QUARRY_MENU = MENUS.register("quarry_menu",
+            resourceLocation -> IMenuTypeExtension.create(QuarryMenu::new));
+
     public static void register(IEventBus bus)
     {
         MENUS.register(bus);

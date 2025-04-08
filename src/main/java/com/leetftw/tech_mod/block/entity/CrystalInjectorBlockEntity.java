@@ -63,7 +63,7 @@ public class CrystalInjectorBlockEntity extends UpgradeableLeetBlockEntity
             @Override
             public void set(int pIndex, int pValue)
             {
-                if (pIndex == 0) progress = pValue;
+
             }
         };
     }

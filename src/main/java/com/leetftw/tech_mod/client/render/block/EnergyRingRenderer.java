@@ -37,7 +37,7 @@ public class EnergyRingRenderer implements BlockEntityRenderer<EnergyRingControl
 
         float d = 2f;
         float d_prime = 0.25f;
-        model = new EnergyRingUnbakedModel(fluidSprite, d, d_prime, 10, 45);
+        model = new EnergyRingUnbakedModel(fluidSprite, d, d_prime, 30, 45);
         model.bake();
     }
 

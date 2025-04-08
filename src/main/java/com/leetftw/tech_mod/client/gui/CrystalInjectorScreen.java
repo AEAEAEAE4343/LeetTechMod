@@ -48,9 +48,6 @@ public class CrystalInjectorScreen extends UpgradeableScreen<CrystalInjectorMenu
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY)
     {
-        // TODO: this function shares 59 lines with CrystallizerScreen
-        //       Make util class for this, or include some of this functionality in a core class
-
         // Draw background
         guiGraphics.blit(RenderType::guiTextured,
                 BACKGROUND,
@@ -71,46 +68,10 @@ public class CrystalInjectorScreen extends UpgradeableScreen<CrystalInjectorMenu
         }
 
         // Render energy
-        guiGraphics.blitSprite(RenderType::guiTextured,
-                ENERGY_SPRITE_ON,
-                leftPos + 15, topPos + 16,   // Target (x,y)
-                ENERGY_WIDTH, ENERGY_HEIGHT);  // Rendered texture size (cx,cy)
-
-        int totalHeight = ENERGY_HEIGHT;
-        int requiredHeight = (menu.getMaxEnergy() - menu.getEnergyStored()) * totalHeight / menu.getMaxEnergy();
-        guiGraphics.blitSprite(RenderType::guiTextured,
-                ENERGY_SPRITE_OFF,
-                leftPos + 15, topPos + 16,   // Target (x,y)
-                ENERGY_WIDTH, requiredHeight); // Rendered texture size (cx,cy)
+        RenderUtils.drawEnergyBar(guiGraphics, leftPos + 15, topPos + 16, ENERGY_HEIGHT, menu.getEnergyStored(), menu.getMaxEnergy());
 
         // Render fluid
-        FluidStack stack = menu.getFluid();
-        Fluid fluid = stack.getFluid();
-        if (fluid != Fluids.EMPTY)
-        {
-            var attributes = IClientFluidTypeExtensions.of(fluid);
-            ResourceLocation fluidLoc = attributes.getStillTexture(stack);
-            TextureAtlasSprite sprite = getMinecraft().getTextureAtlas(ResourceLocation.fromNamespaceAndPath("minecraft", "textures/atlas/blocks.png")).apply(fluidLoc);
-            int tint = attributes.getTintColor();
-
-            totalHeight = FLUID_HEIGHT;
-            requiredHeight = stack.getAmount() * totalHeight / menu.getMaxFluid();
-            int heightRendered = 0;
-            while (heightRendered < requiredHeight)
-            {
-                int heightRemaining = requiredHeight - heightRendered;
-                int heightToRender = Math.min(heightRemaining, 16);
-                guiGraphics.blit(RenderType::guiTextured, sprite.atlasLocation(),
-                        leftPos + 31, topPos + 16 + FLUID_HEIGHT - heightRendered - heightToRender, // Position to render (x,y)
-                        sprite.getX(), sprite.getY() + ((float) ((FLUID_WIDTH - heightToRender) * FLUID_WIDTH) / sprite.contents().width()),                           // Source position (x,y)
-                        FLUID_WIDTH, heightToRender,                            // Size to render (cx,cy)
-                        sprite.contents().width(), heightToRender * FLUID_WIDTH / sprite.contents().width(),  // Source size (cx,cy)
-                        1024, 1024,                                 // Full texture size
-                        tint);
-
-                heightRendered += heightToRender;
-            }
-        }
+        RenderUtils.drawFluidBar(guiGraphics, getMinecraft(), leftPos + 31, topPos + 16, FLUID_HEIGHT, menu.getFluid(), menu.getMaxFluid());
 
         // Render crafting recipe
         guiGraphics.renderItem(new ItemStack(Blocks.BUDDING_AMETHYST), leftPos + 69, topPos + 35);

@@ -4,6 +4,7 @@ import com.leetftw.tech_mod.block.BaseLeetEntityBlock;
 import com.leetftw.tech_mod.block.HorizontalLeetEntityBlock;
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.entity.BaseLeetBlockEntity;
+import com.leetftw.tech_mod.block.entity.CrystallizerBlockEntity;
 import com.leetftw.tech_mod.block.entity.ModBlockEntities;
 import com.leetftw.tech_mod.block.multiblock.StaticMultiBlockPart;
 import com.leetftw.tech_mod.util.DebugHelper;
@@ -316,12 +317,17 @@ public class QuarryControllerBlock extends HorizontalLeetEntityBlock
             }
             ((ServerPlayer) player).sendSystemMessage(Component.literal("Formed: " + formation.success));
         }
-        else if (level.getBlockEntity(pos) instanceof QuarryControllerBlockEntity quarryBe)
+        else
         {
-            DebugHelper.chatOutput("State: " + quarryBe.getState());
+            BlockEntity entity = level.getBlockEntity(pos);
+            ServerPlayer serverPlayer = (ServerPlayer) player;
+            if (entity instanceof QuarryControllerBlockEntity blockEntity)
+            {
+                serverPlayer.openMenu(blockEntity, pos);
+            }
         }
 
-        return returnVal;
+        return InteractionResult.SUCCESS;
     }
 
     @Override

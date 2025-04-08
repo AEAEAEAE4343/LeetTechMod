@@ -3,6 +3,7 @@ package com.leetftw.tech_mod;
 import com.leetftw.tech_mod.block.ModBlocks;
 import com.leetftw.tech_mod.block.entity.ModBlockEntities;
 import com.leetftw.tech_mod.client.gui.CrystalInjectorScreen;
+import com.leetftw.tech_mod.client.gui.QuarryScreen;
 import com.leetftw.tech_mod.fluid.ModFluids;
 import com.leetftw.tech_mod.item.ModCreativeTabs;
 import com.leetftw.tech_mod.item.ModDataComponents;
@@ -161,6 +162,9 @@ public class LeetTechMod
 
             LOGGER.info("Registering menu for Crystal Injector");
             event.register(ModMenuTypes.CRYSTAL_INJECTOR_MENU.get(), CrystalInjectorScreen::new);
+
+            LOGGER.info("Registering menu for Quarry Controller");
+            event.register(ModMenuTypes.QUARRY_MENU.get(), QuarryScreen::new);
         }
     }
 }
